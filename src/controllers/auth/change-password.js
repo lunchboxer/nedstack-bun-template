@@ -1,7 +1,7 @@
-import { User } from '../../models/userModel.js'
 import { getUserOrThrow } from '../../controllers/userController.js'
-import { passwordMatches, hashPassword } from '../../utils/crypto.js'
+import { User } from '../../models/userModel.js'
 import { setAlert } from '../../utils/alert.js'
+import { hashPassword, passwordMatches } from '../../utils/crypto.js'
 import { redirect } from '../../utils/redirect.js'
 
 export const changePassword = async (context, _request, params) => {

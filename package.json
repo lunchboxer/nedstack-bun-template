@@ -1,20 +1,22 @@
 {
-    "name": "ned-elysia-blank",
-    "version": "1.0.50",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "bun run --watch server.js",
-        "compress": "find public -type f \\( -name '*.html' -o -name '*.js' -o -name '*.css' \\) -exec brotli -f {} \\;"
-    },
-    "dependencies": {
-        "@libsql/client": "^0.14.0",
-        "nanoid": "^5.0.9",
-        "nunjucks": "^3.2.4"
-    },
-    "devDependencies": {
-        "@biomejs/biome": "^1.9.4",
-        "@types/nunjucks": "^3.2.6",
-        "bun-types": "latest"
-    },
-    "module": "src/app.js"
+  "name": "ned-elysia-blank",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch server.js",
+    "compress": "find public -type f \\( -name '*.html' -o -name '*.js' -o -name '*.css' \\) -exec brotli -f {} \\;",
+    "lint": "biome check",
+    "format": "biome check --fix"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.14.0",
+    "nanoid": "^5.0.9",
+    "nunjucks": "^3.2.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/nunjucks": "^3.2.6",
+    "bun-types": "latest"
+  },
+  "module": "src/app.js"
 }

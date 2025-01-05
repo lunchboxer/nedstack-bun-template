@@ -7,8 +7,6 @@
 
 This is a template for an [Bun](http://bun.sh) web server using [nunjucks](https://mozilla.github.io/nunjucks/) as the templating engine. There is almost no frontend javascript. You can add yours on an as needed basis.
 
-It requires Node.js v18 or later.
-
 ## Other features
 
 - CSS only theme switcher. Some JS is used to persist the theme across page loads.

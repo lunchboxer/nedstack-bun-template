@@ -1,5 +1,5 @@
-import { verifyAndDecodeJwt } from '../utils/crypto.js'
 import { User } from '../models/userModel.js'
+import { verifyAndDecodeJwt } from '../utils/crypto.js'
 
 export async function authMiddleware(context, request) {
   const cookies = request.headers.get('cookie')

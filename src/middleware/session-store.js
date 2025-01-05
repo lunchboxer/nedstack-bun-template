@@ -1,5 +1,5 @@
-import { sessionStore } from '../utils/session-store.js'
 import { setCookie } from '../utils/cookies.js'
+import { sessionStore } from '../utils/session-store.js'
 
 export async function sessionStoreMiddleware(context, request) {
   const cookies = request.headers.get('cookie')

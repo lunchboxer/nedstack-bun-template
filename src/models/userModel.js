@@ -1,8 +1,8 @@
+import { nanoid } from 'nanoid'
 import { hashPassword } from '../utils/crypto.js'
 import { validate } from '../utils/validation.js'
 import { client } from './db.js'
 import { queries } from './queryLoader.js'
-import { nanoid } from 'nanoid'
 
 const USER_VALIDATION_RULES = {
   // Base rules that apply to both create and update

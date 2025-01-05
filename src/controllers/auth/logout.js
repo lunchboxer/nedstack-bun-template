@@ -1,7 +1,7 @@
-import { sessionStore } from '../../utils/session-store.js'
 import { setAlert } from '../../utils/alert.js'
 import { setCookie } from '../../utils/cookies.js'
 import { redirect } from '../../utils/redirect.js'
+import { sessionStore } from '../../utils/session-store.js'
 
 export const logoutController = (context, request) => {
   const sessionId = context.sessionId

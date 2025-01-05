@@ -1,7 +1,7 @@
 import { User } from '../../models/userModel.js'
-import { generateJwt } from '../../utils/crypto.js'
-import { setCookie } from '../../utils/cookies.js'
 import { setAlert } from '../../utils/alert.js'
+import { setCookie } from '../../utils/cookies.js'
+import { generateJwt } from '../../utils/crypto.js'
 import { redirect } from '../../utils/redirect.js'
 
 export const registerController = async (context, request) => {

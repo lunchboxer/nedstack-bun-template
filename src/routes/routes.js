@@ -4,12 +4,12 @@ import { logoutController } from '../controllers/auth/logout.js'
 import { registerController } from '../controllers/auth/register.js'
 import {
     allUsers,
-    showUser,
     createUser,
-    showUserEditForm,
-    editUser,
     deleteUser,
-    showChangePasswordForm
+    editUser,
+    showChangePasswordForm,
+    showUser,
+    showUserEditForm
 } from '../controllers/userController.js'
 import { onlyAdmins, onlyAdminsOrSelf } from '../middleware/auth.js'
 

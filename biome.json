@@ -1,71 +1,60 @@
 {
-    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-    "organizeImports": {
-        "enabled": true
-    },
-    "files": {
-        "ignore": [
-            "./node_modules/**",
-            "./.git/**",
-            "./dist/**",
-            "./.cloudflare/**"
-        ]
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "files": {
+    "ignore": [
+      "./node_modules/**",
+      "./.git/**",
+      "./dist/**",
+      "./.cloudflare/**"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "ignore": ["**/routes.js"]
+  },
+  "javascript": {
+    "globals": ["Bun"],
+    "formatter": {
+      "quoteStyle": "single",
+      "arrowParentheses": "asNeeded",
+      "semicolons": "asNeeded",
+      "trailingCommas": "all"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "all": true,
+      "correctness": {
+        "noNodejsModules": "off"
+      },
+      "suspicious": {
+        "noConsole": {
+          "level": "error",
+          "options": {
+            "allow": ["error", "info", "warn", "assert"]
+          }
+        }
+      }
+    }
+  },
+  "overrides": [
+    {
+      "include": ["**/*.html"]
+    }
+  ],
+  "css": {
+    "linter": {
+      "enabled": true
     },
     "formatter": {
-        "enabled": true,
-        "indentStyle": "space",
-        "indentWidth": 2,
-        "ignore": [
-            "**/routes.js"
-        ]
-    },
-    "javascript": {
-        "globals": [
-            "Bun"
-        ],
-        "formatter": {
-            "quoteStyle": "single",
-            "arrowParentheses": "asNeeded",
-            "semicolons": "asNeeded",
-            "trailingCommas": "all"
-        }
-    },
-    "linter": {
-        "enabled": true,
-        "rules": {
-            "all": true,
-            "correctness": {
-                "noNodejsModules": "off"
-            },
-            "suspicious": {
-                "noConsole": {
-                    "level": "error",
-                    "options": {
-                        "allow": [
-                            "error",
-                            "info",
-                            "warn",
-                            "assert"
-                        ]
-                    }
-                }
-            }
-        }
-    },
-    "overrides": [
-        {
-            "include": [
-                "**/*.html"
-            ]
-        }
-    ],
-    "css": {
-        "linter": {
-            "enabled": true
-        },
-        "formatter": {
-            "enabled": true,
-            "indentStyle": "space"
-        }
+      "enabled": true,
+      "indentStyle": "space"
     }
+  }
 }
