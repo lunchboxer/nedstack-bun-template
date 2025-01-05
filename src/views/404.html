@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}
+Page not found
+{% endblock %}
+{% block content %}
+
+<h2>Error: 404</h2>
+<p>The url you requested: <em>'{{ path }}'</em> could not be found.</p>
+<p><a href="/">Go back to the home page</a></p>
+
+{% endblock %}

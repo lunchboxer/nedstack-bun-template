@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create User
+{% endblock %}
+
+{% block content %}
+
+<h2>Create User</h2>
+
+<form action="/user/create" method="post">
+    <label for="username-input">Username</label>
+    <input type="text" id="username-input" name="username" value="{{ newUser.username }}" required minlength="3" maxlength="20" />
+    {% if errors.username %}
+    <p class="error">{{ errors.username }}</p>
+    {% endif %}
+
+    <label for="name-input">Name</label>
+    <input type="text" name="name" id="name-input" value="{{ newUser.name }}" />
+    {% if errors.name %}
+    <p class="error">{{ errors.name }}</p>
+    {% endif %}
+
+    <label for="email-input">Email</label>
+    <input type="text" name="email" id="email-input" required value="{{ newUser.email }}" />
+    {% if errors.email %}
+    <p class="error">{{ errors.email }}</p>
+    {% endif %}
+
+    <label for="password-input">Password</label>
+    <input type="password" name="password" id="password-input" required value="{{ newUser.password }}" minlength="6" maxlength="40" />
+    {% if errors.password %}
+    <p class="error">{{ errors.password }}</p>
+    {% endif %}
+
+    <label for="role-select">Role</label>
+    <select name="role" id="role-select">
+        <option value="admin" {% if newUser.role=='admin' %}selected{% endif %}>Admin</option>
+        <option value="user" {% if newUser.role=='user' or not newUser.role %}selected{% endif %}>User</option>
+    </select>
+
+    <div class="button-group">
+        <a href="/user" class="button">Cancel</a>
+        <input type="submit" value="Save" />
+    </div>
+</form>
+{% endblock %}

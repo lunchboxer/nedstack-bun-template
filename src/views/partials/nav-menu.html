@@ -1,0 +1,64 @@
+<nav id="mainNav" role="navigation" class="full">
+    <div id="navMenuToggle" class="menuToggle">
+        <input type="checkbox" id="navMenuCheckbox" />
+
+        <span class="trigger">
+            {% include "icons/menu.svg" %}
+        </span>
+        <ul id="navMenu" class="menu">
+            <li class="close">
+                {% include "icons/x.svg" %}
+            </li>
+            <li class="app-info">
+                {% include "partials/logo-and-title.html" %}
+            </li>
+            <hr />
+            {% if user.role === 'admin' %}
+            <li class="section-title">
+                <h3>Admin</h3>
+            </li>
+            <li>
+                <label for="navMenuCheckbox">
+                    <a href="/user">
+                        Users
+                    </a>
+                </label>
+            </li>
+            {% endif %}
+            <li class="section-title">
+                <h3>User</h3>
+            </li>
+            {% if user %}
+            <li>
+                <label for="navMenuCheckbox">
+                    <a href="/auth/profile">
+                        Profile
+                    </a>
+                </label>
+            </li>
+            <li>
+                <label for="navMenuCheckbox">
+                    <a href="/auth/logout">
+                        Log out
+                    </a>
+                </label>
+            </li>
+            {% else %}
+            <li>
+                <label for="navMenuCheckbox">
+                    <a href="/auth/login">
+                        Log in
+                    </a>
+                </label>
+            </li>
+            <li>
+                <label for="navMenuCheckbox">
+                    <a href="/auth/register">
+                        Register
+                    </a>
+                </label>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

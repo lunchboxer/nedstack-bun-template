@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+
+<form id="register-form" method="post">
+    <h2>Register</h2>
+
+    <label for="username-input" class="label {% if errors.username %}invalid{% endif %}">
+        Username
+    </label>
+    <input name="username" id="username-input" required value="{{username}}" {% if errors.username
+        %}class="invalid" {% endif %}>
+
+    {% if errors.username %}
+    <p class="error">{{ errors.username }}</p>
+    {% endif %}
+
+    <label for="email-input" class="label {% if errors.email %}invalid{% endif %}">
+        Email
+    </label>
+    <input name="email" required value="{{email}}" id="email-input" {% if errors.email %}class="invalid" {% endif
+        %}>
+
+    {% if errors.email %}
+    <p class="error">{{ errors.email }}</p>
+    {% endif %}
+
+    <label for="password-input" class="label {% if errors.password %}invalid{% endif %}">
+        Password
+    </label>
+    <input name="password" type="password" id="password-input" required minlength="6" maxlength="40"
+        value="{{password}}" {% if errors.password %}class="invalid" {% endif %}>
+
+    {% if errors.password %}
+    <p class="error">{{ errors.password }}</p>
+    {% endif %}
+
+    <label for="name-input" class="label {% if errors.name%}invalid{% endif %}">
+        Name (Optional)
+    </label>
+    <input name="name" id="name-input" value="{{name}}" {% if errors.name %}class="invalid" {% endif %}>
+
+    {% if errors.name %}
+    <p class="error">{{ errors.name }}</p>
+    {% endif %}
+
+    {% if error.all %}
+    <p class="error">{{error.all}}</p>
+    {% endif %}
+
+
+    <div class="button-group">
+        <input class="form-submit" type="submit" value="Register" />
+    </div>
+</form>
+
+{{ errors | dump }}
+{% endblock %}

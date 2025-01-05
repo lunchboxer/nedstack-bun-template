@@ -1,0 +1,26 @@
+{% if errors.all %}
+<input type="checkbox" id="alert-dismiss" />
+<aside class="alert alert-error" role="alert" aria-live="assertive">
+    {% include "icons/alert-triangle.svg" %}
+    <p>{{ errors.all }}</p>
+    <label for="alert-dismiss">
+        {% include "icons/x.svg" %}
+    </label>
+</aside>
+{% endif %}
+{% if alert %}
+<input type="checkbox" id="alert-dismiss" />
+<aside class="alert alert-{{alert.type }}" role="alert" aria-live="assertive">
+    {% if alert.type == "error" %}
+    {% include "icons/alert-triangle.svg" %}
+    {% elif alert.type == "success" %}
+    {% include "icons/check-circle.svg" %}
+    {% else %}
+    {% include "icons/info.svg" %}
+    {% endif %}
+    <p>{{ alert.message }}</p>
+    <label for="alert-dismiss">
+        {% include "icons/x.svg" %}
+    </label>
+</aside>
+{% endif %}
