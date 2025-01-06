@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import { generateId } from '../models/db.js'
 
 export class SessionStore {
   constructor() {
@@ -6,7 +6,7 @@ export class SessionStore {
   }
 
   create() {
-    const sessionId = nanoid()
+    const sessionId = generateId()
     this.store.set(sessionId, { createdAt: Date.now() })
     return sessionId
   }

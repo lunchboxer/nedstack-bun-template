@@ -12,11 +12,6 @@ export const getUserOrThrow = async userId => {
   return user
 }
 
-export const renderFormWithErrors = async (req, res, view, formErrors) => {
-  const user = await getUserOrThrow(req)
-  return res.render(view, { selectedUser: user, errors: formErrors })
-}
-
 export const allUsers = async (context, _request) => {
   const { data: users, errors } = await User.getAll()
   return context.sendPage('user/index.html', {

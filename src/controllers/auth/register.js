@@ -28,7 +28,7 @@ export const registerController = async (context, request) => {
     )
     const url = new URL(request.url, `http://${request.headers.host}`)
     const redirectUrl = url.searchParams.get('redirect') || '/'
-    redirect(context, redirectUrl)
+    return redirect(context, redirectUrl)
   } catch (error) {
     return context.sendPage('auth/register.html', {
       ...context.body,

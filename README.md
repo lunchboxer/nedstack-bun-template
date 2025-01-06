@@ -27,7 +27,7 @@ This is a template for an [Bun](http://bun.sh) web server using [nunjucks](https
 Since it's a template, you'll need to make a copy of it. I recommend using [degit](https://github.com/Rich-Harris/degit) to do this.
 
 ```bash
-npx degit lunchboxer/nedstack-template my-project
+bunx degit lunchboxer/nedstack-bun-template my-project
 cd my-project
 ```
 
@@ -44,10 +44,16 @@ TURSO_AUTH_TOKEN=
 DB_URL_DEV=file:./database/dev.sqlite
 ```
 
-Create the first admin user with `npm run seed`
-Run the server with `npm run dev`.
+Create the first admin user with `bun run seed`
+Run the server with `bun run dev`.
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+The production server uses brotli to serve static files. So you'll need to run `bun run compress` to update the static compressed files.
+
+## Going further
+
+An in-memory session store is used for simplicity, but I would not recommend it on an app with a lot of traffic or complexity. A lot of people use Redis.
 
 ## **License**
 

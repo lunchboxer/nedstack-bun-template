@@ -1,7 +1,6 @@
-import { nanoid } from 'nanoid'
 import { hashPassword } from '../utils/crypto.js'
 import { validate } from '../utils/validation.js'
-import { client } from './db.js'
+import { client, generateId } from './db.js'
 import { queries } from './queryLoader.js'
 
 const USER_VALIDATION_RULES = {
@@ -273,7 +272,7 @@ export const User = {
     }
 
     try {
-      const id = nanoid()
+      const id = generateId()
       const password = await hashPassword(data.password)
       const { createUser } = queries
       await client.execute({

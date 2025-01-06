@@ -1,16 +1,16 @@
 {
-  "name": "ned-elysia-blank",
+  "name": "nedstack-bun-template",
   "version": "1.0.50",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch server.js",
     "compress": "find public -type f \\( -name '*.html' -o -name '*.js' -o -name '*.css' \\) -exec brotli -f {} \\;",
     "lint": "biome check",
-    "format": "biome check --fix"
+    "format": "biome check --fix",
+    "start": "NODE_ENV=production bun run server.js"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",
-    "nanoid": "^5.0.9",
     "nunjucks": "^3.2.4"
   },
   "devDependencies": {

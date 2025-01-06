@@ -33,8 +33,9 @@ export const loginController = async (context, request) => {
     setCookie(context, 'auth', token, undefined, true)
     setAlert(context, `You're now logged in as ${user.username}!`, 'success')
 
-    redirect(context, redirectUrl)
+    return redirect(context, redirectUrl)
   } catch (error) {
+    console.error('error', error)
     return context.sendPage('auth/login.html', {
       errors: { all: error.message },
     })
