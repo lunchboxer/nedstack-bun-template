@@ -6,7 +6,7 @@ SELECT COUNT(1) FROM user;
 
 -- name: createUser
 INSERT INTO user (id, username, name, email, password, role)
-VALUES (?, ?, ?, ?, ?, ?);
+VALUES ($id, $username, $name, $email, $password, $role);
 
 -- name: getUserByUsername
 SELECT id, username, name, email, role FROM user WHERE username = ?;
@@ -21,25 +21,25 @@ SELECT id, username, name, email, role FROM user WHERE id = ?;
 SELECT id, username, name, email, role, password FROM user WHERE id = ?;
 
 -- name: updateUserById
-UPDATE user SET username = ?, name = ?, email = ?, role = ? WHERE id = ?;
+UPDATE user SET username = $username, name = $name, email = $email, role = $role WHERE id = $id;
 
 -- name: updateUserByIdWithPassword
-UPDATE user SET username = ?, name = ?, email = ?, role = ?, password = ? WHERE id = ?;
+UPDATE user SET username = $username, name = $name, email = $email, role = $role, password = $password WHERE id = $id;
 
 -- name: removeUserById
 DELETE FROM user WHERE id = ?;
 
 -- name: usernameTaken
-SELECT EXISTS (SELECT 1 FROM user WHERE username = ?);
+SELECT 1 FROM user WHERE username = ?;
 
 -- name: usernameTakenExcludingId
-SELECT EXISTS (SELECT 1 FROM user WHERE username = ? AND id != ?);
+SELECT 1 FROM user WHERE username = ? AND id != ?;
 
 -- name: emailTaken
-SELECT EXISTS (SELECT 1 FROM user WHERE email = ?);
+SELECT 1 FROM user WHERE email = ?;
 
 -- name: emailTakenExcludingId
-SELECT EXISTS (SELECT 1 FROM user WHERE email = ? AND id != ?);
+SELECT 1 FROM user WHERE email = ? AND id != ?;
 
 -- name: updateUserPassword
 UPDATE user SET password = ? WHERE id = ?;

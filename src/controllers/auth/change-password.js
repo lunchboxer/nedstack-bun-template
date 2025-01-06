@@ -1,30 +1,38 @@
 import { getUserOrThrow } from '../../controllers/userController.js'
 import { User } from '../../models/userModel.js'
 import { setAlert } from '../../utils/alert.js'
-import { hashPassword, passwordMatches } from '../../utils/crypto.js'
+import { passwordMatches } from '../../utils/crypto.js'
 import { redirect } from '../../utils/redirect.js'
 
 export const changePassword = async (context, _request, params) => {
   const { currentPassword, newPassword, confirmPassword } = context.body
 
+  const user = await getUserOrThrow(params.id)
   if (newPassword !== confirmPassword) {
-    return context.sendPage('user/change-password', {
+    return context.sendPage('user/change-password.html', {
+      selectedUser: user,
       errors: { confirmPassword: 'Passwords do not match' },
     })
   }
 
-  const user = await getUserOrThrow(params.id)
   if (context.user.role !== 'admin') {
     if (!passwordMatches(currentPassword, user.password)) {
-      return context.sendPage('user/change-password', {
+      return context.sendPage('user/change-password.html', {
         errors: { currentPassword: 'Invalid password' },
+        selectedUser: user,
       })
     }
   }
 
-  const hashedPassword = await hashPassword(newPassword)
-
-  User.patch(params.id, { password: hashedPassword })
+  const { errors } = User.patch(params.id, {
+    password: newPassword,
+  })
+  if (errors) {
+    return context.sendPage('user/change-password.html', {
+      selectedUser: user,
+      errors: { newPassword: errors.password },
+    })
+  }
 
   if (context.user.id === params.id) {
     setAlert(

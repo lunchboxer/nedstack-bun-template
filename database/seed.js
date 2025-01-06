@@ -1,22 +1,28 @@
-import { client, generateId } from '../src/models/db.js'
+import { db, generateId } from '../src/models/db.js'
 import { queries } from '../src/models/queryLoader.js'
 import { hashPassword } from '../src/utils/crypto.js'
 
 const createUser = async (username, password, email, name, role) => {
   const hashedPassword = await hashPassword(password)
-  const userId = generateId()
+  const id = generateId()
 
-  const { createUser } = queries
-  await client.execute({
-    sql: createUser,
-    args: [userId, username, name, email, hashedPassword, role],
+  const createStatement = db.prepare(queries.createUser)
+  const result = createStatement.run({
+    id,
+    username,
+    name,
+    email,
+    password: hashedPassword,
+    role,
   })
-  return userId
+  console.info('User created:', result)
+  return id
 }
 
 const seed = async () => {
-  const userCountResult = await client.execute({ sql: queries.countUsers })
-  const userCount = userCountResult.rows[0]?.[0]
+  const userCountStatement = db.prepare(queries.countUsers)
+  const userCount = userCountStatement.get()[0]
+  console.info('User count:', userCount)
   if (userCount > 0) {
     console.info('Users already seeded')
     return

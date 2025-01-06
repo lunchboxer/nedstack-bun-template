@@ -16,7 +16,7 @@ export const loginController = async (context, request) => {
     }
 
     // Find the user by username
-    const { data: user, errors } = await User.findByUsername(username, true)
+    const { data: user, errors } = User.findByUsername(username, true)
     if (errors) {
       throw new Error('Invalid credentials')
     }
@@ -30,7 +30,7 @@ export const loginController = async (context, request) => {
     // Generate a JWT token
     const token = await generateJwt({ id: user.id }, process.env.JWT_SECRET)
 
-    setCookie(context, 'auth', token, undefined, true)
+    setCookie(context, 'auth', token, undefined)
     setAlert(context, `You're now logged in as ${user.username}!`, 'success')
 
     return redirect(context, redirectUrl)

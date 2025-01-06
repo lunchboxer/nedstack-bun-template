@@ -41,10 +41,10 @@ export const createServer = (port, hostname) => {
       }
 
       try {
+        await alertMiddleware(context, request)
         await sessionStoreMiddleware(context, request)
         await parseBody(context, request)
         await authMiddleware(context, request)
-        alertMiddleware(context, request)
         sendPageMiddleware(context)
 
         // Match routes

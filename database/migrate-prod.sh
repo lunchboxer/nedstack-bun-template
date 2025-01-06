@@ -1,9 +1,9 @@
 #!/bin/bash
 
-localdb=database/local.db
+localdb=database/production.db
 
 if [ ! -f $localdb ]; then
-    echo "Creating local database at $localdb"
+    echo "Creating production database at $localdb"
     touch $localdb
 fi
 

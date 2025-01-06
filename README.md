@@ -15,7 +15,7 @@ This is a template for an [Bun](http://bun.sh) web server using [nunjucks](https
 - [feather icons](https://feathericons.com/)
 - Simple cookie-based JWT authentication with password and username
 - SQLite database migrations with [atlas](https://atlasgo.io)
-- SQLite database with [libsql](https://libsql.org) and [turso](https://github.com/turso/turso)
+- SQLite database using native [bun](https://bun.sh) sqlite driver
 - Simple in memory session store
 - Simple error handling
 - Cookie-based alert system
@@ -31,17 +31,14 @@ bunx degit lunchboxer/nedstack-bun-template my-project
 cd my-project
 ```
 
-You'll need to have [atlas](https://atlasgo.io) installed for the database migrations. `curl -sSf https://atlasgo.sh | sh` should do the trick. With atlas installed run `./database/migrate-local.sh` to create the local sqlite database and set it up according to `./database/schema.sql`.
+You'll need to have [atlas](https://atlasgo.io) installed for the database migrations. `curl -sSf https://atlasgo.sh | sh` should do the trick. With atlas installed run `./database/migrate-dev.sh`  and `./database/migrate-prod.sh` to create the local sqlite databases and set them up according to `./database/schema.sql`.
 
-Install dependencies with `npm install`.
+Install dependencies with `bun install`.
 
 Create a `.env` file with the following contents:
 
 ```env
 JWT_SECRET=changeme
-TURSO_DB_URL=
-TURSO_AUTH_TOKEN=
-DB_URL_DEV=file:./database/dev.sqlite
 ```
 
 Create the first admin user with `bun run seed`

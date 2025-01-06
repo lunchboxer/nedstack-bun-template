@@ -35,3 +35,7 @@ yarn-error.log*
 **/*.log
 package-lock.json
 **/*.bun
+**.db
+**.db-wal
+**.db-shm
+bun.lockb

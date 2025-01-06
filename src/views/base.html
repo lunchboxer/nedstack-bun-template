@@ -19,8 +19,10 @@
         {% include "partials/error-alert.html" %}
         {% block content %}
         {% endblock %}
-        {{ session | dump }}
     </main>
+    {% if differentThing %}
+    <input type="hidden" id="differentThing" value="{{differentThing}}">
+    {% endif %}
 
     {% include "partials/footer.html" %}
     <script src="/public/scripts.js" type="text/javascript"></script>

@@ -1,6 +1,6 @@
 import { hashPassword } from '../utils/crypto.js'
 import { validate } from '../utils/validation.js'
-import { client, generateId } from './db.js'
+import { db, generateId } from './db.js'
 import { queries } from './queryLoader.js'
 
 const USER_VALIDATION_RULES = {
@@ -53,6 +53,7 @@ export const User = {
 
     return mergedRules
   },
+
   /**
    * Validates user data against specified validation rules
    * @param {Object} data - The user data to validate
@@ -72,18 +73,18 @@ export const User = {
    * Checks unique constraints for username and email
    * @param {Object} data - The user data to check for uniqueness
    * @param {string} [excludeId] - Optional user ID to exclude from uniqueness check
-   * @returns {Promise<Object>} Object containing any uniqueness constraint errors
+   * @returns {Object} Object containing any uniqueness constraint errors
    */
-  _checkUniqueContraints: async (data, excludeId) => {
+  _checkUniqueContraints: (data, excludeId) => {
     const errors = {}
     if (data.username) {
-      const usernameTaken = await User.isUsernameTaken(data.username, excludeId)
+      const usernameTaken = User.isUsernameTaken(data.username, excludeId)
       if (usernameTaken) {
         errors.username = 'Username already exists'
       }
     }
     if (data.email) {
-      const emailTaken = await User.isEmailTaken(data.email, excludeId)
+      const emailTaken = User.isEmailTaken(data.email, excludeId)
       if (emailTaken) {
         errors.email = 'Email already exists'
       }
@@ -93,14 +94,14 @@ export const User = {
 
   /**
    * Retrieves all users
-   * @returns {Promise<{data: Array<Object>|null, errors: Object|null}>}
+   * @returns {{data: Array<Object>|null, errors: Object|null}}
    * An object containing either an array of users or an error
    */
-  getAll: async () => {
-    const { getAllUsers } = queries
-    const result = await client.execute(getAllUsers)
+  getAll: () => {
+    const getAllStatement = db.query(queries.getAllUsers)
+    const result = getAllStatement.all()
     return {
-      data: result.rows,
+      data: result,
       errors: null,
     }
   },
@@ -108,10 +109,11 @@ export const User = {
   /**
    * Finds a user by their ID
    * @param {string} id - The user's unique identifier
-   * @returns {Promise<{data: Object|null, errors: Object|null}>}
+   * @param {boolean} [showPassword=false] - Whether to include the password in the result
+   * @returns {{data: Object|null, errors: Object|null}}
    * An object containing either the user or an error
    */
-  findById: async (id, showPassword = false) => {
+  findById: (id, showPassword = false) => {
     if (!id) {
       return {
         data: null,
@@ -121,11 +123,11 @@ export const User = {
       }
     }
     const { getUserById, getUserByIdWithPassword } = queries
-    const result = await client.execute({
-      sql: showPassword ? getUserByIdWithPassword : getUserById,
-      args: [id],
-    })
-    const user = result?.rows[0]
+    const getUserByIdStatement = db.query(
+      showPassword ? getUserByIdWithPassword : getUserById,
+    )
+    const result = getUserByIdStatement.get(id)
+    const user = result
     return {
       data: user,
       errors: user ? null : { all: 'User not found' },
@@ -135,10 +137,11 @@ export const User = {
   /**
    * Finds a user by their username
    * @param {string} username - The user's username
-   * @returns {Promise<{data: Object|null, errors: Object|null}>}
+   * @param {boolean} [showPassword=false] - Whether to include the password in the result
+   * @returns {{data: Object|null, errors: Object|null}}
    * An object containing either the user or an error
    */
-  findByUsername: async (username, showPassword = false) => {
+  findByUsername: (username, showPassword = false) => {
     if (!username) {
       return {
         data: null,
@@ -149,14 +152,11 @@ export const User = {
     }
     const { getUserByUsername, getUserByUsernameWithPassword } = queries
     const sql = showPassword ? getUserByUsernameWithPassword : getUserByUsername
-    const result = await client.execute({
-      sql,
-      args: [username],
-    })
-    const user = result?.rows[0]
+    const statement = db.query(sql)
+    const data = statement.get(username)
     return {
-      data: user,
-      errors: user ? null : { all: 'User not found' },
+      data,
+      errors: data ? null : { all: 'User not found' },
     }
   },
 
@@ -164,11 +164,11 @@ export const User = {
    * Updates a user's information
    * @param {string} id - The user's unique identifier
    * @param {Object} data - The user data to update
-   * @returns {Promise<{data: Object|null, errors: Object|null}>}
+   * @returns {{data: Object|null, errors: Object|null}}
    * An object containing either the updated user or an error
    */
-  update: async (id, data) => {
-    const { data: existingUser } = await User.findById(id)
+  update: (id, data) => {
+    const { data: existingUser } = User.findById(id)
     if (!existingUser) {
       return { data: null, errors: { all: 'User not found' } }
     }
@@ -178,7 +178,7 @@ export const User = {
       return { data: null, errors: validationResult.errors }
     }
 
-    const uniqueErrors = await User._checkUniqueContraints(data, id)
+    const uniqueErrors = User._checkUniqueContraints(data, id)
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
@@ -187,19 +187,11 @@ export const User = {
 
     try {
       const { updateUserById } = queries
-      const result = await client.execute({
-        sql: updateUserById,
-        args: [
-          updateData.username,
-          updateData.name,
-          updateData.email,
-          updateData.role,
-          id,
-        ],
-      })
+      const statement = db.query(updateUserById)
+      const result = statement.run(updateData)
 
       return {
-        data: result?.rows[0] || null,
+        data: result,
         errors: null,
       }
     } catch (error) {
@@ -213,11 +205,11 @@ export const User = {
   /**
    * Removes a user
    * @param {string} id - The user's unique identifier
-   * @returns {Promise<{data: Object|null, errors: Object|null}>}
+   * @returns {{data: Object|null, errors: Object|null}}
    * An object containing either the deleted user or an error
    */
-  remove: async id => {
-    const existingUserResponse = await User.findById(id)
+  remove: id => {
+    const existingUserResponse = User.findById(id)
     if (!existingUserResponse.data) {
       return {
         data: null,
@@ -227,11 +219,7 @@ export const User = {
       }
     }
     try {
-      const { removeUserById } = queries
-      await client.execute({
-        sql: removeUserById,
-        args: [id],
-      })
+      db.query(queries.removeUserById).run(id)
       return {
         data: existingUserResponse.data,
         errors: null,
@@ -252,7 +240,7 @@ export const User = {
    * @param {string} data.password - The user's password
    * @param {string} [data.name] - Optional user's name
    * @param {string} [data.role='user'] - Optional user role, defaults to 'user'
-   * @returns {Promise<{data: {id: string}|null, errors: Object|null}>}
+   * @returns {{data: {id: string}|null, errors: Object|null}}
    * An object containing either the created user's ID or validation/creation errors
    */
   create: async data => {
@@ -266,7 +254,7 @@ export const User = {
       }
     }
 
-    const uniqueErrors = await User._checkUniqueContraints(data)
+    const uniqueErrors = User._checkUniqueContraints(data)
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
@@ -274,12 +262,7 @@ export const User = {
     try {
       const id = generateId()
       const password = await hashPassword(data.password)
-      const { createUser } = queries
-      await client.execute({
-        sql: createUser,
-        args: [id, data.username, data.name, data.email, password, data.role],
-      })
-
+      db.query(queries.createUser).run({ ...data, id, password })
       return {
         data: { id },
         errors: null,
@@ -296,56 +279,59 @@ export const User = {
    * Checks if a username is already taken by another user
    * @param {string} username - The username to check for existence
    * @param {string} [excludeId] - Optional user ID to exclude from the check
-   * @returns {Promise<boolean>} True if the username is taken, false otherwise
+   * @returns {boolean} True if the username is taken, false otherwise
    */
-  isUsernameTaken: async (username, excludeId = null) => {
+  isUsernameTaken: (username, excludeId = null) => {
     if (!username) {
       return
     }
-    const { usernameTaken, usernameTakenExcludingId } = queries
-    const result = await client.execute({
-      sql: excludeId ? usernameTakenExcludingId : usernameTaken,
-      args: excludeId ? [username, excludeId] : [username],
-    })
-    return !!result?.rows[0]?.[0]
+    if (excludeId) {
+      const statement = db.query(queries.usernameTakenExcludingId)
+      const result = statement.get(username, excludeId)
+      return !!result
+    }
+    const statement = db.query(queries.usernameTaken)
+    const result = statement.get(username)
+    return !!result
   },
 
   /**
    * Checks if an email is already taken by another user
    * @param {string} email - The email to check for existence
    * @param {string} [excludeId] - Optional user ID to exclude from the check
-   * @returns {Promise<boolean>} True if the email is taken, false otherwise
+   * @returns {boolean} True if the email is taken, false otherwise
    */
-  isEmailTaken: async (email, excludeId = null) => {
+  isEmailTaken: (email, excludeId = null) => {
     if (!email) {
       return
     }
-    const { emailTaken, emailTakenExcludingId } = queries
-    const result = await client.execute({
-      sql: excludeId ? emailTakenExcludingId : emailTaken,
-      args: excludeId ? [email, excludeId] : [email],
-    })
-    return !!result?.rows[0]?.[0]
+    if (excludeId) {
+      const statement = db.query(queries.emailTakenExcludingId)
+      const result = statement.get(email, excludeId)
+      return !!result
+    }
+    const statement = db.query(queries.emailTaken)
+    const result = statement.get(email)
+    return !!result
   },
 
+  /**
+   * Partially updates a user's information
+   * @param {string} id - The user's unique identifier
+   * @param {Object} data - The user data to update
+   * @returns {{data: Object|null, errors: Object|null}}
+   * An object containing either the updated user or an error
+   */
   patch: async (id, data) => {
-    const { getUserByIdWithPassword } = queries
-    const result = await client.execute({
-      sql: getUserByIdWithPassword,
-      args: [id],
-    })
-    const existingUser = result?.rows[0]
+    const statement = db.query(queries.getUserByIdWithPassword)
+    const existingUser = statement.get(id)
     if (!existingUser) {
       return { data: null, errors: { all: 'User not found' } }
     }
-
-    const updateData = {
-      username: data.username || existingUser.username,
-      name: data.name === '' ? null : data.name || existingUser.name,
-      email: data.email || existingUser.email,
-      role: data.role || existingUser.role,
-      password: data.password || existingUser.password,
+    if (data.name === '') {
+      data.name = null
     }
+    const updateData = { ...existingUser, ...data }
 
     const validationResult = User._validate(
       updateData,
@@ -354,25 +340,18 @@ export const User = {
     if (!validationResult.isValid) {
       return { data: null, errors: validationResult.errors }
     }
+    if (data.password) {
+      updateData.password = await hashPassword(data.password)
+    }
 
-    const uniqueErrors = await User._checkUniqueContraints(updateData, id)
+    const uniqueErrors = User._checkUniqueContraints(updateData, id)
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
 
     try {
-      const { updateUserByIdWithPassword } = queries
-      await client.execute({
-        sql: updateUserByIdWithPassword,
-        args: [
-          updateData.username,
-          updateData.name,
-          updateData.email,
-          updateData.role,
-          updateData.password,
-          id,
-        ],
-      })
+      db.query(queries.updateUserByIdWithPassword).run({ ...updateData, id })
+
       return {
         data: { ...updateData, id },
         errors: null,
