@@ -667,7 +667,7 @@ nav ul.menu hr {
 }
 
 .menuToggle a:hover {
-  background-color: var(--background-color);
+  background-color: var(--contrast-bg-color);
 }
 
 .menuToggle input {
