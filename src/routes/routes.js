@@ -13,7 +13,7 @@ import {
     showUser,
     showUserEditForm
 } from '../controllers/userController.js'
-import { onlyAdmins, onlyAdminsOrSelf } from '../middleware/auth.js'
+import { onlyAdmins, onlyAdminsOrSelf, onlyAuthenticated } from '../middleware/auth.js'
 
 export const routes = [
 // Method,  Path,                        Handler or Template         Auth Middleware
@@ -21,7 +21,7 @@ export const routes = [
 
   ['GET',   '/auth/login',               showLogin                                      ],
   ['GET',   '/auth/register',            showRegister                                   ],
-  ['GET',   '/auth/profile',             'auth/profile.html'                            ],
+  ['GET',   '/auth/profile',             'auth/profile.html',         onlyAuthenticated ],
   ['GET',   '/auth/logout',              logoutController                               ],
   ['POST',  '/auth/login',               loginController                                ],
   ['POST',  '/auth/register',            registerController                             ],

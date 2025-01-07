@@ -14,7 +14,7 @@ export async function authMiddleware(context, request) {
         process.env.JWT_SECRET || '',
       )
 
-      const { data: user } = await User.findById(id)
+      const { data: user } = User.findById(id)
       if (user) {
         context.user = user
       }
