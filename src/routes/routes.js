@@ -2,6 +2,8 @@ import { changePassword } from '../controllers/auth/change-password.js'
 import { loginController } from '../controllers/auth/login.js'
 import { logoutController } from '../controllers/auth/logout.js'
 import { registerController } from '../controllers/auth/register.js'
+import { showLogin } from '../controllers/auth/show-login.js'
+import { showRegister } from '../controllers/auth/show-register.js'
 import {
     allUsers,
     createUser,
@@ -17,8 +19,8 @@ export const routes = [
 // Method,  Path,                        Handler or Template         Auth Middleware
   ['GET',   '/',                         'index.html'                                   ],
 
-  ['GET',   '/auth/login',               'auth/login.html'                              ],
-  ['GET',   '/auth/register',            'auth/register.html'                           ],
+  ['GET',   '/auth/login',               showLogin                                      ],
+  ['GET',   '/auth/register',            showRegister                                   ],
   ['GET',   '/auth/profile',             'auth/profile.html'                            ],
   ['GET',   '/auth/logout',              logoutController                               ],
   ['POST',  '/auth/login',               loginController                                ],
