@@ -1,11 +1,10 @@
 ![Header](./nerdy-ned-banner.webp)
 # NEDStack template
 
-- nunjucks
 - Bun
 - That's it, okay?
 
-This is a template for an [Bun](http://bun.sh) web server using [nunjucks](https://mozilla.github.io/nunjucks/) as the templating engine. There is almost no frontend javascript. You can add yours on an as needed basis.
+This is a template for an [Bun](http://bun.sh) web server using tagged template literals to compose html. There is almost no frontend javascript. You can add yours on an as needed basis.
 
 Requires Bun v1.1.14 or higher.
 
@@ -50,10 +49,64 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 The production server uses brotli to serve static files. So you'll need to run `bun run compress` to update the static compressed files.
 
+## html templates
+
+You'll notice the views directory has files with `.html.js` extension. This is nothing special. It helps me to know that this is a module for outputting html. It's also used by my text editor (neovim BTW) to trigger the right tooling for fun and easy editing.
+
+Html is written inside of javascript tagged template literals like this:
+
+```js
+import { html } from '../html.js'
+
+const someHtml = (data) => html`<p>${data?.text}</p>`
+```
+
+You could you a plain template literal, but my editor uses this to know if it's dealing with html or javascript. It also trims extra whitespace off the ends. That is all it does. Your secure headers are not quite enough to fend of threats from potential xss attacks. In the above example, if `data.text` is not strictly under your control then it will need to be sanitized first. This could be done automatically, but with NedStack it's done manually
+
+```js
+import { sanitize, html } from '../html.js'
+
+const someHtml = (data) => html`<p>${sanitize(data?.text)}</p>`
+```
+
+There is no special syntax to learn and you need not struggle to figure out what the abstractions are doing that goes against your intuition. Everything is just plain javascript.
+
+### Loops, conditionals, partials, and layouts
+
+Yes. All just simple javascript. Want to loop over an array? That looks like this:
+
+```js
+const someHtml = (items) => html`
+  <ul>
+    ${items?.map((item) => html`<li>${item}</li>`).join('')}
+  </ul>
+  `
+```
+
+Want to conditionally render something?
+
+```js
+const someHtml = ({ foo, bar }) => html`
+<h1>Conditional Rendering</h1>
+${foo
+? html`<p>Foo is true-ish</p>`
+: html`<p>Foo isn't</p>`
+}
+
+<div class="${bar && 'bar-is-true-ish'}">
+    <p>stuff</p>
+</div>
+`
+```
+
+## Authentication
+
+Authentication is handled by a simple JWT token.
+
 ## Going further
 
 An in-memory session store is used for simplicity, but I would not recommend it on an app with a lot of traffic or complexity. A lot of people use Redis.
 
 ## **License**
 
-NEDStack template is released under the MIT License. See the **[LICENSE](./LICENSE)** file for details.
+NedStack template is released under the MIT License. See the **[LICENSE](./LICENSE)** file for details.
