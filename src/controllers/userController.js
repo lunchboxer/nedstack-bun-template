@@ -1,6 +1,12 @@
 import { User } from '../models/userModel.js'
 import { setAlert } from '../utils/alert.js'
 import { redirect } from '../utils/redirect.js'
+import { error403Page } from '../views/403.html.js'
+import { changePasswordPage } from '../views/user/change-password.html.js'
+import { createUserPage } from '../views/user/create.html.js'
+import { userDetailPage } from '../views/user/detail.html.js'
+import { editUserPage } from '../views/user/edit.html.js'
+import { allUsersPage } from '../views/user/index.html.js'
 
 export const getUserOrThrow = userId => {
   const { data: user, errors } = User.findById(userId)
@@ -12,39 +18,39 @@ export const getUserOrThrow = userId => {
   return user
 }
 
-export const allUsers = (context, _request) => {
+export const renderAllUsers = (context, _request) => {
   const { data: users, errors } = User.getAll()
-  return context.sendPage('user/index.html', {
+  return context.sendPage(allUsersPage, {
     users,
     errors,
   })
 }
 
-export const showUser = (context, _request, params) => {
+export const renderUserDetail = (context, _request, params) => {
   const user = getUserOrThrow(params.id)
-  return context.sendPage('user/detail.html', { selectedUser: user })
+  return context.sendPage(userDetailPage, { selectedUser: user })
 }
 
-export const showUserEditForm = (context, _request, params) => {
+export const renderEditUser = (context, _request, params) => {
   const user = getUserOrThrow(params.id)
-  return context.sendPage('user/edit.html', { selectedUser: user })
+  return context.sendPage(editUserPage, { selectedUser: user })
 }
 
-export const showChangePasswordForm = (context, _request, params) => {
+export const renderPasswordForm = (context, _request, params) => {
   const user = getUserOrThrow(params.id)
-  return context.sendPage('user/change-password.html', { selectedUser: user })
+  return context.sendPage(changePasswordPage, { selectedUser: user })
 }
 
-export const editUser = (context, _request, params) => {
+export const handleUpdateUser = (context, _request, params) => {
   if (context.user?.role !== 'admin' && context.body?.role) {
-    return context.sendPage('403.html', {
-      error: new Error('You do not have permission to edit this user.'),
+    return context.sendPage(error403Page, {
+      error: new Error("You do not have permission to edit this user's role."),
     })
   }
   const { errors } = User.update(params.id, context.body)
   if (errors) {
     const user = getUserOrThrow(params.id)
-    return context.sendPage('user/edit.html', { selectedUser: user, errors })
+    return context.sendPage(editUserPage, { selectedUser: user, errors })
   }
   setAlert(
     context,
@@ -54,20 +60,23 @@ export const editUser = (context, _request, params) => {
   return redirect(context, `/user/${params.id}`)
 }
 
-export const deleteUser = (context, _request, params) => {
+export const handleDeleteUser = (context, _request, params) => {
   const { errors } = User.remove(params.id)
   if (errors) {
     const user = getUserOrThrow(params.id)
-    return context.sendPage('user/detail', { errors, selectedUser: user })
+    return context.sendPage(userDetailPage, { errors, selectedUser: user })
   }
   setAlert(context, 'User deleted successfully.', 'success')
   return redirect(context, '/user')
 }
 
-export const createUser = (context, _request) => {
-  const { data, errors } = User.create(context.body)
+export const renderCreateUser = (context, _request) =>
+  context.sendPage(createUserPage)
+
+export const handleCreateUser = async (context, _request) => {
+  const { data: user, errors } = await User.create(context.body)
   if (errors) {
-    return context.sendPage('user/create.html', {
+    return context.sendPage(createUserPage, {
       newUser: context.body,
       errors,
     })
@@ -77,5 +86,5 @@ export const createUser = (context, _request) => {
     `User "${context.body?.username}" created successfully.`,
     'success',
   )
-  return redirect(context, `/user/${data.id}`)
+  return redirect(context, `/user/${user.id}`)
 }

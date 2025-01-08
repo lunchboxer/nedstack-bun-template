@@ -1,4 +1,3 @@
-import nunjucks from 'nunjucks'
 import { alertMiddleware } from './middleware/alert.js'
 import { authMiddleware } from './middleware/auth.js'
 import { parseBody } from './middleware/parse-body.js'
@@ -12,19 +11,12 @@ import { serveStaticFile } from './utils/serve-static.js'
 
 const dev = process.env.NODE_ENV !== 'production'
 
-const env = nunjucks.configure('src/views', {
-  autoescape: true,
-  noCache: dev,
-})
-
 export const createServer = (port, hostname) => {
   return Bun.serve({
     port,
     hostname,
     async fetch(request) {
-      const context = {
-        env,
-      }
+      const context = {}
 
       secureHeadersMiddleware(context)
 

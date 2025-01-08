@@ -1,3 +1,7 @@
+import { error403Page } from '../views/403.html.js'
+import { error404Page } from '../views/404.html.js'
+import { errorPage } from '../views/error.html.js'
+
 export function errorHandler500(context, request, error) {
   const headers = new Headers(context.headers)
   console.error('Internal Server Error:', error)
@@ -5,21 +9,21 @@ export function errorHandler500(context, request, error) {
   const acceptHeader = request.headers.get('accept')
   if (acceptHeader?.includes('text/html')) {
     headers.set('content-type', 'text/html')
-    const html = context.env.render('error.html', { error, status })
+    const html = errorPage({ error, status })
     return new Response(html, {
-      status: 500,
+      status,
       headers,
     })
   }
   if (acceptHeader?.includes('application/json')) {
     headers.set('content-type', 'application/json')
     return new Response(JSON.stringify({ error }), {
-      status: 500,
+      status,
       headers,
     })
   }
   return new Response(null, {
-    status: 500,
+    status,
   })
 }
 
@@ -30,7 +34,7 @@ export const errorHandler404 = (context, request) => {
   const acceptHeader = request.headers.get('accept')
   if (acceptHeader?.includes('text/html')) {
     headers.set('content-type', 'text/html')
-    const html = context.env.render('404.html', {
+    const html = error404Page({
       user: context.user,
       path,
     })
@@ -58,7 +62,7 @@ export const errorHandler403 = (context, request, error) => {
   const acceptHeader = request.headers.get('accept')
   if (acceptHeader?.includes('text/html')) {
     headers.set('content-type', 'text/html')
-    const html = context.env.render('403.html', {
+    const html = error403Page({
       error,
       user: context.user,
       path,

@@ -240,7 +240,7 @@ export const User = {
    * @param {string} data.password - The user's password
    * @param {string} [data.name] - Optional user's name
    * @param {string} [data.role='user'] - Optional user role, defaults to 'user'
-   * @returns {{data: {id: string}|null, errors: Object|null}}
+   * @returns Promise<{data: {id: string}|null, errors: Object|null}>
    * An object containing either the created user's ID or validation/creation errors
    */
   create: async data => {
@@ -319,7 +319,7 @@ export const User = {
    * Partially updates a user's information
    * @param {string} id - The user's unique identifier
    * @param {Object} data - The user data to update
-   * @returns {{data: Object|null, errors: Object|null}}
+   * @returns Promise<{data: Object|null, errors: Object|null}>
    * An object containing either the updated user or an error
    */
   patch: async (id, data) => {

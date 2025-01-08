@@ -3,8 +3,9 @@ import { setAlert } from '../../utils/alert.js'
 import { setCookie } from '../../utils/cookies.js'
 import { generateJwt } from '../../utils/crypto.js'
 import { redirect } from '../../utils/redirect.js'
+import { registerPage } from '../../views/auth/register.html.js'
 
-export const registerController = async (context, request) => {
+export const handleRegister = async (context, request) => {
   try {
     if (!context.body) {
       throw new Error('Missing request body')
@@ -12,7 +13,7 @@ export const registerController = async (context, request) => {
     const { data: user, errors } = await User.create(context.body)
 
     if (errors) {
-      return context.sendPage('auth/register.html', {
+      return context.sendPage(registerPage, {
         ...context.body,
         errors,
       })
@@ -30,9 +31,17 @@ export const registerController = async (context, request) => {
     const redirectUrl = url.searchParams.get('redirect') || '/'
     return redirect(context, redirectUrl)
   } catch (error) {
-    return context.sendPage('auth/register.html', {
+    return context.sendPage(registerPage, {
       ...context.body,
       errors: { all: error.message },
     })
   }
+}
+
+export const renderRegister = (context, _request) => {
+  if (context.user) {
+    setAlert(context, 'You are already logged in')
+    return redirect(context, '/')
+  }
+  return context.sendPage(registerPage)
 }

@@ -1,11 +1,16 @@
+import { html } from '../html.js'
+import moonIcon from '../icons/moon.svg'
+import sunIcon from '../icons/sun.svg'
+
+export const themeSwitcher = html`
 <div class="theme-switcher">
     <label id="theme-switcher-light">
         <input type="radio" name="theme" value="light">
-        {% include "../icons/sun.svg" %}
+        ${sunIcon}
     </label>
     <label id="theme-switcher-dark">
         <input type="radio" name="theme" value="dark" checked>
-        <div class="icon">{% include "../icons/moon.svg" %}</div>
+        ${moonIcon}
     </label>
 </div>
 
@@ -44,4 +49,4 @@
             display: none;
         }
     </style>
-</noscript>
+</noscript>`

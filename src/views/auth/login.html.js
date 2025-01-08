@@ -1,14 +1,13 @@
-{% extends "base.html" %}
+import { html } from '../html.js'
+import { layout } from '../layout.html.js'
 
-{% block headextra %}
-    <link rel="prefetch" href="/auth/register">
-{% endblock %}
+const title = 'Log in'
 
-{% block title %}
-Log in
-{% endblock %}
+const headExtras = html`
+<link rel="prefetch" href="/auth/register">
+`
 
-{% block content %}
+const content = () => html`
 
 <form action="/auth/login" method="post">
 
@@ -26,4 +25,6 @@ Log in
 </form>
 <p>Don't have an account? <a href="/auth/register">Create one now.</a></p>
 
-{% endblock %}
+`
+
+export const loginPage = data => layout({ title, content, data, headExtras })

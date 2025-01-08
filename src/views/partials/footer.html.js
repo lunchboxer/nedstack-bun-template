@@ -1,6 +1,10 @@
+import { html } from '../html.js'
+import { themeSwitcher } from './theme-switcher.html.js'
+
+export const footer = html`
 <footer>
     <p>This is the footer</p>
-    {% include "./theme-switcher.html" %}
+    ${themeSwitcher}
 </footer>
 
 <style>
@@ -12,3 +16,4 @@
         padding: 0 1rem;
     }
 </style>
+`

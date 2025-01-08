@@ -3,7 +3,7 @@ import { setCookie } from '../../utils/cookies.js'
 import { redirect } from '../../utils/redirect.js'
 import { sessionStore } from '../../utils/session-store.js'
 
-export const logoutController = (context, request) => {
+export const handleLogout = (context, request) => {
   const sessionId = context.sessionId
   if (sessionId) {
     sessionStore.delete(sessionId)

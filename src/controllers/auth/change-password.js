@@ -4,7 +4,7 @@ import { setAlert } from '../../utils/alert.js'
 import { passwordMatches } from '../../utils/crypto.js'
 import { redirect } from '../../utils/redirect.js'
 
-export const changePassword = async (context, _request, params) => {
+export const handleChangePassword = async (context, _request, params) => {
   const { currentPassword, newPassword, confirmPassword } = context.body
 
   const user = await getUserOrThrow(params.id)
@@ -24,7 +24,7 @@ export const changePassword = async (context, _request, params) => {
     }
   }
 
-  const { errors } = User.patch(params.id, {
+  const { errors } = await User.patch(params.id, {
     password: newPassword,
   })
   if (errors) {
