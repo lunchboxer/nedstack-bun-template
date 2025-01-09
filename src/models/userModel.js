@@ -101,8 +101,9 @@ export const userModel = {
   getAll: () => {
     const getAllStatement = db.query(queries.getAllUsers)
     const result = getAllStatement.all()
+    const users = result.map(user => sanitizeObject(user))
     return {
-      data: sanitizeObject(result),
+      data: users,
       errors: null,
     }
   },

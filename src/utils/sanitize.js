@@ -1,10 +1,3 @@
-export const sanitizeInput = input => {
-  if (typeof input !== 'string') {
-    return ''
-  }
-  return input.trim().replace(/[<>&'"]/g, '')
-}
-
 export const sanitizeObject = input => {
   if (typeof input !== 'object') {
     return {}

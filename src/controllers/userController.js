@@ -7,7 +7,6 @@ import { createUserPage } from '../views/user/create.html.js'
 import { userDetailPage } from '../views/user/detail.html.js'
 import { editUserPage } from '../views/user/edit.html.js'
 import { allUsersPage } from '../views/user/index.html.js'
-import { sanitizeObject } from '../utils/sanitize.js'
 
 export const getUserOrThrow = userId => {
   const { data: user, errors } = userModel.findById(userId)
@@ -21,9 +20,8 @@ export const getUserOrThrow = userId => {
 
 export const renderAllUsers = (context, _request) => {
   const { data: users, errors } = userModel.getAll()
-  const cleanUsers = users.map(user => sanitizeObject(user))
   return context.sendPage(allUsersPage, {
-    cleanUsers,
+    users,
     errors,
   })
 }
