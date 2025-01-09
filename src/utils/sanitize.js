@@ -1,4 +1,7 @@
 export const sanitizeObject = input => {
+  if (!input) {
+    return input
+  }
   if (typeof input !== 'object') {
     return {}
   }
