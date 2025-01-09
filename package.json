@@ -4,7 +4,6 @@
   "module": "src/app.js",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/nunjucks": "^3.2.6",
     "bun-types": "latest"
   },
   "scripts": {

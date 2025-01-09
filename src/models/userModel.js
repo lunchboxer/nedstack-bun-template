@@ -2,6 +2,7 @@ import { hashPassword } from '../utils/crypto.js'
 import { validate } from '../utils/validation.js'
 import { db, generateId } from './db.js'
 import { queries } from './queryLoader.js'
+import { sanitizeObject } from '../utils/sanitize.js'
 
 const USER_VALIDATION_RULES = {
   // Base rules that apply to both create and update
@@ -101,7 +102,7 @@ export const User = {
     const getAllStatement = db.query(queries.getAllUsers)
     const result = getAllStatement.all()
     return {
-      data: result,
+      data: sanitizeObject(result),
       errors: null,
     }
   },
@@ -127,7 +128,7 @@ export const User = {
       showPassword ? getUserByIdWithPassword : getUserById,
     )
     const result = getUserByIdStatement.get(id)
-    const user = result
+    const user = sanitizeObject(result)
     return {
       data: user,
       errors: user ? null : { all: 'User not found' },
@@ -153,10 +154,10 @@ export const User = {
     const { getUserByUsername, getUserByUsernameWithPassword } = queries
     const sql = showPassword ? getUserByUsernameWithPassword : getUserByUsername
     const statement = db.query(sql)
-    const data = statement.get(username)
+    const user = statement.get(username)
     return {
-      data,
-      errors: data ? null : { all: 'User not found' },
+      data: sanitizeObject(user),
+      errors: user ? null : { all: 'User not found' },
     }
   },
 
@@ -184,11 +185,12 @@ export const User = {
     }
     data.name = data.name === '' ? null : data.name
     const updateData = { ...existingUser, ...data }
+    const sanitizedUpdateData = sanitizeObject(updateData)
 
     try {
       const { updateUserById } = queries
       const statement = db.query(updateUserById)
-      const result = statement.run(updateData)
+      const result = statement.run(sanitizedUpdateData)
 
       return {
         data: result,
@@ -261,8 +263,9 @@ export const User = {
 
     try {
       const id = generateId()
-      const password = await hashPassword(data.password)
-      db.query(queries.createUser).run({ ...data, id, password })
+      const sanitizedData = sanitizeObject(data)
+      const password = await hashPassword(sanitizedData.password)
+      db.query(queries.createUser).run({ ...sanitizedData, id, password })
       return {
         data: { id },
         errors: null,
@@ -340,20 +343,24 @@ export const User = {
     if (!validationResult.isValid) {
       return { data: null, errors: validationResult.errors }
     }
+    const sanitizedUpdateData = sanitizeObject(updateData)
     if (data.password) {
-      updateData.password = await hashPassword(data.password)
+      updateData.password = await hashPassword(sanitizedUpdateData.password)
     }
 
-    const uniqueErrors = User._checkUniqueContraints(updateData, id)
+    const uniqueErrors = User._checkUniqueContraints(sanitizedUpdateData, id)
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
 
     try {
-      db.query(queries.updateUserByIdWithPassword).run({ ...updateData, id })
+      db.query(queries.updateUserByIdWithPassword).run({
+        ...sanitizedUpdateData,
+        id,
+      })
 
       return {
-        data: { ...updateData, id },
+        data: { ...sanitizedUpdateData, id },
         errors: null,
       }
     } catch (error) {
