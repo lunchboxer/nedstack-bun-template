@@ -266,10 +266,9 @@ export const userModel = {
     }
 
     try {
-      const id = generateId()
       const sanitizedData = sanitizeObject(data)
       const password = await hashPassword(sanitizedData.password)
-      db.query(queries.createUser).run({ ...sanitizedData, id, password })
+      db.query(queries.createUser).run({ ...sanitizedData, password })
       return {
         data: { id: data.id },
         errors: null,
@@ -352,7 +351,10 @@ export const userModel = {
       updateData.password = await hashPassword(sanitizedUpdateData.password)
     }
 
-    const uniqueErrors = User._checkUniqueContraints(sanitizedUpdateData, id)
+    const uniqueErrors = userModel._checkUniqueContraints(
+      sanitizedUpdateData,
+      id,
+    )
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
