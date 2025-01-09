@@ -8,30 +8,30 @@ const userList = users => html`
 <p>Found ${users.length} users</p>
 
 <table>
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        ${users
-          .map(
-            user => html`
-        <tr>
-            <td><a href="/user/${user.id}">${user.username}</a></td>
-            <td>${user.name || '-'}</td>
-            <td>${user.email}</td>
-            <td>${user.role}</td>
-            <td>${user.id}</td>
-        </tr>
-        `,
-          )
-          .join('')}
-    </tbody>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Role</th>
+      <th>ID</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${users
+      .map(
+        user => html`
+    <tr>
+      <td><a href="/user/${user.id}">${user.username}</a></td>
+      <td>${user.name || '-'}</td>
+      <td>${user.email}</td>
+      <td>${user.role}</td>
+      <td>${user.id}</td>
+    </tr>
+    `,
+      )
+      .join('')}
+  </tbody>
 </table>
 `
 
