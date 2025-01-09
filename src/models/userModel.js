@@ -1,8 +1,8 @@
 import { hashPassword } from '../utils/crypto.js'
+import { sanitizeObject } from '../utils/sanitize.js'
 import { validate } from '../utils/validation.js'
 import { db, generateId } from './db.js'
 import { queries } from './queryLoader.js'
-import { sanitizeObject } from '../utils/sanitize.js'
 
 const USER_VALIDATION_RULES = {
   // Base rules that apply to both create and update
