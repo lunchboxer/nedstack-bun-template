@@ -1,4 +1,4 @@
-import { User } from '../models/userModel.js'
+import { userModel } from '../models/userModel.js'
 import { verifyAndDecodeJwt } from '../utils/crypto.js'
 
 export async function authMiddleware(context, request) {
@@ -14,7 +14,7 @@ export async function authMiddleware(context, request) {
         process.env.JWT_SECRET || '',
       )
 
-      const { data: user } = User.findById(id)
+      const { data: user } = userModel.findById(id)
       if (user) {
         context.user = user
       }

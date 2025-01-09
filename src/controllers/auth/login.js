@@ -1,4 +1,4 @@
-import { User } from '../../models/userModel.js'
+import { userModel } from '../../models/userModel.js'
 import { setAlert } from '../../utils/alert.js'
 import { setCookie } from '../../utils/cookies.js'
 import { generateJwt, passwordMatches } from '../../utils/crypto.js'
@@ -17,7 +17,7 @@ export const handleLogin = async (context, request) => {
     }
 
     // Find the user by username
-    const { data: user, errors } = User.findByUsername(username, true)
+    const { data: user, errors } = userModel.findByUsername(username, true)
     if (errors) {
       throw new Error('Invalid credentials')
     }

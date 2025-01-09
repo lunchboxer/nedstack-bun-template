@@ -34,7 +34,7 @@ const USER_VALIDATION_RULES = {
   },
 }
 
-export const User = {
+export const userModel = {
   /**
    * Merges base validation rules with specific validation rules
    * @param {Object} baseRules - The base validation rules to start with
@@ -61,7 +61,7 @@ export const User = {
    * @returns {Object} Validation result with isValid flag and optional errors
    */
   _validate: (data, specificRules = {}) => {
-    const rules = User._mergeValidationRules(
+    const rules = userModel._mergeValidationRules(
       USER_VALIDATION_RULES.base,
       specificRules,
     )
@@ -78,13 +78,13 @@ export const User = {
   _checkUniqueContraints: (data, excludeId) => {
     const errors = {}
     if (data.username) {
-      const usernameTaken = User.isUsernameTaken(data.username, excludeId)
+      const usernameTaken = userModel.isUsernameTaken(data.username, excludeId)
       if (usernameTaken) {
         errors.username = 'Username already exists'
       }
     }
     if (data.email) {
-      const emailTaken = User.isEmailTaken(data.email, excludeId)
+      const emailTaken = userModel.isEmailTaken(data.email, excludeId)
       if (emailTaken) {
         errors.email = 'Email already exists'
       }
@@ -168,17 +168,17 @@ export const User = {
    * An object containing either the updated user or an error
    */
   update: (id, data) => {
-    const { data: existingUser } = User.findById(id)
+    const { data: existingUser } = userModel.findById(id)
     if (!existingUser) {
       return { data: null, errors: { all: 'User not found' } }
     }
 
-    const validationResult = User._validate(data)
+    const validationResult = userModel._validate({ ...data, id })
     if (!validationResult.isValid) {
       return { data: null, errors: validationResult.errors }
     }
 
-    const uniqueErrors = User._checkUniqueContraints(data, id)
+    const uniqueErrors = userModel._checkUniqueContraints(data, id)
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
@@ -209,7 +209,7 @@ export const User = {
    * An object containing either the deleted user or an error
    */
   remove: id => {
-    const existingUserResponse = User.findById(id)
+    const existingUserResponse = userModel.findById(id)
     if (!existingUserResponse.data) {
       return {
         data: null,
@@ -245,7 +245,11 @@ export const User = {
    */
   create: async data => {
     data.role = data.role || 'user'
-    const validationResult = User._validate(data, USER_VALIDATION_RULES.create)
+    data.id = generateId()
+    const validationResult = userModel._validate(
+      data,
+      USER_VALIDATION_RULES.create,
+    )
 
     if (!validationResult.isValid) {
       return {
@@ -254,17 +258,16 @@ export const User = {
       }
     }
 
-    const uniqueErrors = User._checkUniqueContraints(data)
+    const uniqueErrors = userModel._checkUniqueContraints(data)
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
 
     try {
-      const id = generateId()
       const password = await hashPassword(data.password)
-      db.query(queries.createUser).run({ ...data, id, password })
+      db.query(queries.createUser).run({ ...data, password })
       return {
-        data: { id },
+        data: { id: data.id },
         errors: null,
       }
     } catch (error) {
@@ -331,9 +334,9 @@ export const User = {
     if (data.name === '') {
       data.name = null
     }
-    const updateData = { ...existingUser, ...data }
+    const updateData = { ...existingUser, ...data, id }
 
-    const validationResult = User._validate(
+    const validationResult = userModel._validate(
       updateData,
       USER_VALIDATION_RULES.create,
     )
@@ -344,16 +347,16 @@ export const User = {
       updateData.password = await hashPassword(data.password)
     }
 
-    const uniqueErrors = User._checkUniqueContraints(updateData, id)
+    const uniqueErrors = userModel._checkUniqueContraints(updateData, id)
     if (Object.keys(uniqueErrors).length > 0) {
       return { data: null, errors: uniqueErrors }
     }
 
     try {
-      db.query(queries.updateUserByIdWithPassword).run({ ...updateData, id })
+      db.query(queries.updateUserByIdWithPassword).run({ ...updateData })
 
       return {
-        data: { ...updateData, id },
+        data: { ...updateData },
         errors: null,
       }
     } catch (error) {

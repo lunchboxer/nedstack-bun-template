@@ -1,4 +1,5 @@
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const idRegex = /^[a-zA-Z0-9-_]{16}$/
 
 export const validators = {
   isRequired: value => value !== undefined && value !== null && value !== '',
@@ -6,6 +7,7 @@ export const validators = {
   maxLength: (value, max) => value && value.length <= max,
   isEmail: value => value && emailRegex.test(value),
   isInArray: (value, array) => value && array.includes(value),
+  isId: value => value && idRegex.test(value),
 }
 
 const validationRules = {
@@ -15,6 +17,7 @@ const validationRules = {
   maxLength: (value, ruleValue) => validators.maxLength(value, ruleValue),
   email: (value, ruleValue) => (ruleValue ? validators.isEmail(value) : true),
   oneOf: (value, ruleValue) => validators.isInArray(value, ruleValue),
+  id: (value, ruleValue) => (ruleValue ? validators.isId(value) : true),
 }
 
 function validateField(value, fieldRules) {
@@ -48,6 +51,20 @@ export function validate(data, rules) {
 
     if (fieldError) {
       errors[field] = fieldError
+    }
+  }
+
+  for (const [key, value] of Object.entries(data)) {
+    if (
+      key === 'id' ||
+      (typeof value === 'object' && value !== null && value.id)
+    ) {
+      const idValue = key === 'id' ? value : value.id
+      const idError = validateField(idValue, { id: true })
+
+      if (idError) {
+        errors[key] = idError
+      }
     }
   }
 

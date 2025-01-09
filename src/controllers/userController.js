@@ -1,4 +1,4 @@
-import { User } from '../models/userModel.js'
+import { userModel } from '../models/userModel.js'
 import { setAlert } from '../utils/alert.js'
 import { redirect } from '../utils/redirect.js'
 import { error403Page } from '../views/403.html.js'
@@ -7,9 +7,10 @@ import { createUserPage } from '../views/user/create.html.js'
 import { userDetailPage } from '../views/user/detail.html.js'
 import { editUserPage } from '../views/user/edit.html.js'
 import { allUsersPage } from '../views/user/index.html.js'
+import { sanitizeObject } from '../utils/sanitize.js'
 
 export const getUserOrThrow = userId => {
-  const { data: user, errors } = User.findById(userId)
+  const { data: user, errors } = userModel.findById(userId)
   if (errors) {
     const error = new Error(errors.all)
     error.status = 404
@@ -19,9 +20,10 @@ export const getUserOrThrow = userId => {
 }
 
 export const renderAllUsers = (context, _request) => {
-  const { data: users, errors } = User.getAll()
+  const { data: users, errors } = userModel.getAll()
+  const cleanUsers = users.map(user => sanitizeObject(user))
   return context.sendPage(allUsersPage, {
-    users,
+    cleanUsers,
     errors,
   })
 }
@@ -47,7 +49,7 @@ export const handleUpdateUser = (context, _request, params) => {
       error: new Error("You do not have permission to edit this user's role."),
     })
   }
-  const { errors } = User.update(params.id, context.body)
+  const { errors } = userModel.update(params.id, context.body)
   if (errors) {
     const user = getUserOrThrow(params.id)
     return context.sendPage(editUserPage, { selectedUser: user, errors })
@@ -61,7 +63,7 @@ export const handleUpdateUser = (context, _request, params) => {
 }
 
 export const handleDeleteUser = (context, _request, params) => {
-  const { errors } = User.remove(params.id)
+  const { errors } = userModel.remove(params.id)
   if (errors) {
     const user = getUserOrThrow(params.id)
     return context.sendPage(userDetailPage, { errors, selectedUser: user })
@@ -74,7 +76,7 @@ export const renderCreateUser = (context, _request) =>
   context.sendPage(createUserPage)
 
 export const handleCreateUser = async (context, _request) => {
-  const { data: user, errors } = await User.create(context.body)
+  const { data: user, errors } = await userModel.create(context.body)
   if (errors) {
     return context.sendPage(createUserPage, {
       newUser: context.body,

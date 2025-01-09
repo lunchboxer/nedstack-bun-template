@@ -1,5 +1,5 @@
 import { getUserOrThrow } from '../../controllers/userController.js'
-import { User } from '../../models/userModel.js'
+import { userModel } from '../../models/userModel.js'
 import { setAlert } from '../../utils/alert.js'
 import { passwordMatches } from '../../utils/crypto.js'
 import { redirect } from '../../utils/redirect.js'
@@ -24,7 +24,7 @@ export const handleChangePassword = async (context, _request, params) => {
     }
   }
 
-  const { errors } = await User.patch(params.id, {
+  const { errors } = await userModel.patch(params.id, {
     password: newPassword,
   })
   if (errors) {

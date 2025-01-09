@@ -1,4 +1,4 @@
-import { User } from '../../models/userModel.js'
+import { userModel } from '../../models/userModel.js'
 import { setAlert } from '../../utils/alert.js'
 import { setCookie } from '../../utils/cookies.js'
 import { generateJwt } from '../../utils/crypto.js'
@@ -10,7 +10,7 @@ export const handleRegister = async (context, request) => {
     if (!context.body) {
       throw new Error('Missing request body')
     }
-    const { data: user, errors } = await User.create(context.body)
+    const { data: user, errors } = await userModel.create(context.body)
 
     if (errors) {
       return context.sendPage(registerPage, {
