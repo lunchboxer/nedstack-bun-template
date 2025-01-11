@@ -11,7 +11,7 @@ export const footer = html`
     footer {
         display: flex;
         justify-content: space-between;
-        align-items: baseline;
+        align-items: center;
         gap: 1rem;
         padding: 0 1rem;
     }
