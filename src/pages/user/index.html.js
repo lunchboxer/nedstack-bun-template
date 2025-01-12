@@ -1,5 +1,6 @@
-import { html } from '../html.js'
-import { layout } from '../layout.html.js'
+import { userModel } from '../../models/userModel.js'
+import { html } from '../../utils/html.js'
+import { layout } from '../_layout.html.js'
 
 const title = 'Users'
 
@@ -44,4 +45,12 @@ ${users.length === 0 ? html`<p>No users found</p>` : userList(users)}
 <a class="button" href="/user/create">Create New User</a>
 `
 
-export const allUsersPage = data => layout({ title, content, data })
+const allUsersPage = data => layout({ title, content, data })
+
+export const GET = (context, _request) => {
+  const { data: users, errors } = userModel.list()
+  if (errors) {
+    throw new Error(errors.all)
+  }
+  return context.sendPage(allUsersPage, { users })
+}

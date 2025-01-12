@@ -1,4 +1,5 @@
 import { stat } from 'node:fs/promises'
+import { errorHandler403 } from './error-handler.js'
 
 const BASE_PATH = 'public'
 const dev = process.env.NODE_ENV !== 'production'
@@ -95,7 +96,8 @@ export async function serveStaticFile(context, request) {
     const stats = await stat(filePath)
 
     if (stats.isDirectory()) {
-      return new Response('403 Forbidden', { status: 403 })
+      const error = new Error('Directory listing not allowed')
+      return errorHandler403(context, request, error)
     }
 
     const { file, headers } = await getFileToServe(

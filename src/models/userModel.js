@@ -1,104 +1,15 @@
 import { hashPassword } from '../utils/crypto.js'
 import { sanitizeObject } from '../utils/sanitize.js'
-import { validate } from '../utils/validation.js'
 import { db, generateId } from './db.js'
 import { queries } from './queryLoader.js'
 
-const USER_VALIDATION_RULES = {
-  // Base rules that apply to both create and update
-  base: {
-    username: {
-      minLength: 3,
-      maxLength: 20,
-    },
-    email: {
-      email: true,
-    },
-    name: {
-      maxLength: 50,
-    },
-    role: {
-      oneOf: ['admin', 'user'],
-    },
-    password: {
-      minLength: 6,
-      maxLength: 40,
-    },
-  },
-
-  create: {
-    username: { required: true },
-    email: { required: true },
-    name: { required: false },
-    role: { required: true },
-    password: { required: true },
-  },
-}
-
 export const userModel = {
-  /**
-   * Merges base validation rules with specific validation rules
-   * @param {Object} baseRules - The base validation rules to start with
-   * @param {Object} [specificRules={}] - Optional specific rules to merge into base rules
-   * @returns {Object} Merged validation rules
-   */
-  _mergeValidationRules: (baseRules, specificRules = {}) => {
-    const mergedRules = { ...baseRules }
-
-    for (const field of Object.keys(specificRules)) {
-      mergedRules[field] = {
-        ...mergedRules[field],
-        ...specificRules[field],
-      }
-    }
-
-    return mergedRules
-  },
-
-  /**
-   * Validates user data against specified validation rules
-   * @param {Object} data - The user data to validate
-   * @param {Object} [specificRules={}] - Optional specific validation rules
-   * @returns {Object} Validation result with isValid flag and optional errors
-   */
-  _validate: (data, specificRules = {}) => {
-    const rules = userModel._mergeValidationRules(
-      USER_VALIDATION_RULES.base,
-      specificRules,
-    )
-
-    return validate(data, rules)
-  },
-
-  /**
-   * Checks unique constraints for username and email
-   * @param {Object} data - The user data to check for uniqueness
-   * @param {string} [excludeId] - Optional user ID to exclude from uniqueness check
-   * @returns {Object} Object containing any uniqueness constraint errors
-   */
-  _checkUniqueContraints: (data, excludeId) => {
-    const errors = {}
-    if (data.username) {
-      const usernameTaken = userModel.isUsernameTaken(data.username, excludeId)
-      if (usernameTaken) {
-        errors.username = 'Username already exists'
-      }
-    }
-    if (data.email) {
-      const emailTaken = userModel.isEmailTaken(data.email, excludeId)
-      if (emailTaken) {
-        errors.email = 'Email already exists'
-      }
-    }
-    return errors
-  },
-
   /**
    * Retrieves all users
    * @returns {{data: Array<Object>|null, errors: Object|null}}
    * An object containing either an array of users or an error
    */
-  getAll: () => {
+  list: () => {
     const getAllStatement = db.query(queries.getAllUsers)
     const result = getAllStatement.all()
     const users = result.map(user => sanitizeObject(user))
@@ -115,7 +26,7 @@ export const userModel = {
    * @returns {{data: Object|null, errors: Object|null}}
    * An object containing either the user or an error
    */
-  findById: (id, showPassword = false) => {
+  get: (id, showPassword = false) => {
     if (!id) {
       return {
         data: null,
@@ -163,79 +74,6 @@ export const userModel = {
   },
 
   /**
-   * Updates a user's information
-   * @param {string} id - The user's unique identifier
-   * @param {Object} data - The user data to update
-   * @returns {{data: Object|null, errors: Object|null}}
-   * An object containing either the updated user or an error
-   */
-  update: (id, data) => {
-    const { data: existingUser } = userModel.findById(id)
-    if (!existingUser) {
-      return { data: null, errors: { all: 'User not found' } }
-    }
-
-    const validationResult = userModel._validate({ ...data, id })
-    if (!validationResult.isValid) {
-      return { data: null, errors: validationResult.errors }
-    }
-
-    const uniqueErrors = userModel._checkUniqueContraints(data, id)
-    if (Object.keys(uniqueErrors).length > 0) {
-      return { data: null, errors: uniqueErrors }
-    }
-    data.name = data.name === '' ? null : data.name
-    const updateData = { ...existingUser, ...data }
-    const sanitizedUpdateData = sanitizeObject(updateData)
-
-    try {
-      const { updateUserById } = queries
-      const statement = db.query(updateUserById)
-      const result = statement.run(sanitizedUpdateData)
-
-      return {
-        data: result,
-        errors: null,
-      }
-    } catch (error) {
-      return {
-        data: null,
-        errors: { all: error.message },
-      }
-    }
-  },
-
-  /**
-   * Removes a user
-   * @param {string} id - The user's unique identifier
-   * @returns {{data: Object|null, errors: Object|null}}
-   * An object containing either the deleted user or an error
-   */
-  remove: id => {
-    const existingUserResponse = userModel.findById(id)
-    if (!existingUserResponse.data) {
-      return {
-        data: null,
-        errors: {
-          all: 'User not found',
-        },
-      }
-    }
-    try {
-      db.query(queries.removeUserById).run(id)
-      return {
-        data: existingUserResponse.data,
-        errors: null,
-      }
-    } catch (error) {
-      return {
-        data: null,
-        errors: { all: error.message },
-      }
-    }
-  },
-
-  /**
    * Creates a new user in the database
    * @param {Object} data - The user data to create
    * @param {string} data.username - The user's username (required)
@@ -249,29 +87,82 @@ export const userModel = {
   create: async data => {
     data.role = data.role || 'user'
     data.id = generateId()
-    const validationResult = userModel._validate(
-      data,
-      USER_VALIDATION_RULES.create,
-    )
-
-    if (!validationResult.isValid) {
-      return {
-        data: null,
-        errors: validationResult.errors,
-      }
-    }
 
     const uniqueErrors = userModel._checkUniqueContraints(data)
     if (Object.keys(uniqueErrors).length > 0) {
-      return { data: null, errors: uniqueErrors }
+      return { errors: uniqueErrors }
     }
 
     try {
       const sanitizedData = sanitizeObject(data)
       const password = await hashPassword(sanitizedData.password)
       db.query(queries.createUser).run({ ...sanitizedData, password })
+      return { data: { id: data.id } }
+    } catch (error) {
+      return { errors: { all: error.message } }
+    }
+  },
+
+  /**
+   * Updates a user's information
+   * @param {string} id - The user's unique identifier
+   * @param {Object} data - The user data to update
+   * @returns <Promise<{data: Object|null, errors: Object|null}>>
+   * An object containing either the updated user or an error
+   */
+  update: async (id, data) => {
+    const { data: existingUser } = userModel.get(id)
+    if (!existingUser) {
+      return { errors: { all: 'User not found' } }
+    }
+
+    const uniqueErrors = userModel._checkUniqueContraints(data, id)
+    if (Object.keys(uniqueErrors).length > 0) {
+      return { errors: uniqueErrors }
+    }
+    if (data.name === '') {
+      data.name = null
+    }
+    const updateData = { ...existingUser, ...data, id }
+    const sanitizedUpdateData = sanitizeObject(updateData)
+
+    try {
+      let query = queries.updateUserById
+      if (data.password) {
+        sanitizedUpdateData.password = await hashPassword(
+          sanitizedUpdateData.password,
+        )
+        query = queries.updateUserByIdWithPassword
+      }
+
+      const statement = db.query(query)
+      const result = statement.run(sanitizedUpdateData)
+      return { data: result }
+    } catch (error) {
+      return { errors: { all: error.message } }
+    }
+  },
+
+  /**
+   * Removes a user
+   * @param {string} id - The user's unique identifier
+   * @returns {{data: Object|null, errors: Object|null}}
+   * An object containing either the deleted user or an error
+   */
+  remove: id => {
+    const existingUserResponse = userModel.get(id)
+    if (!existingUserResponse.data) {
       return {
-        data: { id: data.id },
+        data: null,
+        errors: {
+          all: 'User not found',
+        },
+      }
+    }
+    try {
+      db.query(queries.removeUserById).run(id)
+      return {
+        data: existingUserResponse.data,
         errors: null,
       }
     } catch (error) {
@@ -321,60 +212,26 @@ export const userModel = {
     const result = statement.get(email)
     return !!result
   },
-
   /**
-   * Partially updates a user's information
-   * @param {string} id - The user's unique identifier
-   * @param {Object} data - The user data to update
-   * @returns Promise<{data: Object|null, errors: Object|null}>
-   * An object containing either the updated user or an error
+   * Checks unique constraints for username and email
+   * @param {Object} data - The user data to check for uniqueness
+   * @param {string} [excludeId] - Optional user ID to exclude from uniqueness check
+   * @returns {Object} Object containing any uniqueness constraint errors
    */
-  patch: async (id, data) => {
-    const statement = db.query(queries.getUserByIdWithPassword)
-    const existingUser = statement.get(id)
-    if (!existingUser) {
-      return { data: null, errors: { all: 'User not found' } }
-    }
-    if (data.name === '') {
-      data.name = null
-    }
-    const updateData = { ...existingUser, ...data, id }
-
-    const validationResult = userModel._validate(
-      updateData,
-      USER_VALIDATION_RULES.create,
-    )
-    if (!validationResult.isValid) {
-      return { data: null, errors: validationResult.errors }
-    }
-    const sanitizedUpdateData = sanitizeObject(updateData)
-    if (data.password) {
-      updateData.password = await hashPassword(sanitizedUpdateData.password)
-    }
-
-    const uniqueErrors = userModel._checkUniqueContraints(
-      sanitizedUpdateData,
-      id,
-    )
-    if (Object.keys(uniqueErrors).length > 0) {
-      return { data: null, errors: uniqueErrors }
-    }
-
-    try {
-      db.query(queries.updateUserByIdWithPassword).run({
-        ...sanitizedUpdateData,
-        id,
-      })
-
-      return {
-        data: { ...sanitizedUpdateData, id },
-        errors: null,
-      }
-    } catch (error) {
-      return {
-        data: null,
-        errors: { all: error.message },
+  _checkUniqueContraints: (data, excludeId) => {
+    const errors = {}
+    if (data.username) {
+      const usernameTaken = userModel.isUsernameTaken(data.username, excludeId)
+      if (usernameTaken) {
+        errors.username = 'Username already exists'
       }
     }
+    if (data.email) {
+      const emailTaken = userModel.isEmailTaken(data.email, excludeId)
+      if (emailTaken) {
+        errors.email = 'Email already exists'
+      }
+    }
+    return errors
   },
 }

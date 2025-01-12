@@ -24,7 +24,7 @@ export const handleLogout = (context, request) => {
   if (acceptHeader?.includes('application/json')) {
     headers.set('content-type', 'application/json')
     return new Response(JSON.stringify({ success: true }), {
-      status: 404,
+      status: 200,
       headers,
     })
   }
