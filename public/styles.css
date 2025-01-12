@@ -219,10 +219,7 @@ li {
 }
 
 .button,
-button,
-input[type="reset"],
-input[type="button"],
-input[type="submit"] {
+button {
   padding: 0 2rem;
   font-family: var(--font-family);
   border: 1px solid var(--primary-color);
@@ -242,21 +239,13 @@ input[type="submit"] {
   box-shadow: 0 0.1rem 0.2rem rgba(0, 0, 0, 0.15);
 }
 
-input[type="submit"] {
+input[type="submit"].button {
   background-color: var(--primary-color);
   color: var(--background-color);
 }
 
 .button:focus,
-.button:hover,
-button:focus,
-button:hover,
-input[type="button"]:focus,
-input[type="button"]:hover,
-input[type="reset"]:focus,
-input[type="reset"]:hover,
-input[type="submit"]:focus,
-input[type="submit"]:hover {
+.button:hover {
   background-color: var(--color);
   border-color: var(--color);
   color: var(--background-color);
@@ -270,11 +259,7 @@ textarea {
   margin-bottom: 1.5rem;
 }
 
-.button[disabled],
-button[disabled],
-input[type="button"][disabled],
-input[type="reset"][disabled],
-input[type="submit"][disabled] {
+.button[disabled] {
   cursor: default;
   opacity: 0.4;
   background-color: inherit;
@@ -283,15 +268,7 @@ input[type="submit"][disabled] {
 }
 
 .button[disabled]:focus,
-.button[disabled]:hover,
-button[disabled]:focus,
-button[disabled]:hover,
-input[type="button"][disabled]:focus,
-input[type="button"][disabled]:hover,
-input[type="reset"][disabled]:focus,
-input[type="reset"][disabled]:hover,
-input[type="submit"][disabled]:focus,
-input[type="submit"][disabled]:hover {
+.button[disabled]:hover {
   background-color: inherit;
   border-color: inherit;
   color: inherit;

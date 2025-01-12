@@ -73,7 +73,7 @@ const content = ({ errors = {}, username, email, password, name }) =>
   }
 
   <div class="button-group">
-    <input class="form-submit" type="submit" value="Register" />
+    <input class="form-submit" class="button" type="submit" value="Register" />
   </div>
 </form>
 `

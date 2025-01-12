@@ -25,7 +25,7 @@ const content = () => html`
   <input type="password" name="password" id="password" required />
 
   <div class="button-group">
-    <input type="submit" value="Log in" />
+    <input type="submit" class="button" value="Log in" />
   </div>
 </form>
 <p>Don't have an account? <a href="/auth/register">Create one now.</a></p>
