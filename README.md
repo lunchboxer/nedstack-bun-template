@@ -22,6 +22,7 @@ Requires Bun v1.1.14 or higher.
 - Cookie-based alert system
 - secure headers a-la [helmet](https://helmetjs.github.io/)
 - role-base auth with route middleware to restrict access where needed
+- file-based routing
 
 ## Getting started
 
@@ -99,9 +100,9 @@ ${foo
 `
 ```
 
-## Authentication
+## Routing
 
-Authentication is handled by a simple JWT token.
+The router looks for functions with the method name in the file matching the route. In order to be able to use the delete method, the functions are named will all caps - "GET", "POST", "PUT", "PATCH", and "DELETE". Route parameters are defined by directories with brackets, so `/user/[id]/index.html.js` will match a request to route '/user/nw9anW0_al-4bhw' and pass in argument `parameters = { id: nw9anW0_al-4bhw }`.
 
 ## Going further
 
