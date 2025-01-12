@@ -39,3 +39,4 @@ package-lock.json
 **/*.db-wal
 **/*.db-shm
 bun.lockb
+public/styles.css.br
