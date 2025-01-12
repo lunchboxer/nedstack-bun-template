@@ -13,34 +13,34 @@ const content = ({ selectedUser = {}, errors = {}, user }) => html`
 <h2>Edit User</h2>
 
 <form method="post">
-  <label for="username">Username</label>
-  <input type="text" name="username" value="${selectedUser.username}" required minlength="3" maxlength="20" />
-  ${errors.username && html`<p class="error">${errors.username}</p>`}
+    <label for="username">Username</label>
+    <input type="text" name="username" value="${selectedUser.username}" required minlength="3" maxlength="20" />
+    ${errors.username && html`<p class="error">${errors.username}</p>`}
 
-  <label for="name">Name</label>
-  <input type="text" name="name" value="${selectedUser.name}" />
-  ${errors.name && html`<p class="error">${errors.name}</p>`}
+    <label for="name">Name</label>
+    <input type="text" name="name" value="${selectedUser.name}" />
+    ${errors.name && html`<p class="error">${errors.name}</p>`}
 
-  <label for="email">Email</label>
-  <input type="text" name="email" value="${selectedUser.email}" required />
-  ${errors.email && html`<p class="error">${errors.email}</p>`}
+    <label for="email">Email</label>
+    <input type="text" name="email" value="${selectedUser.email}" required />
+    ${errors.email && html`<p class="error">${errors.email}</p>`}
 
-  ${
-    user.role === 'admin' &&
-    html`
+    ${
+      user.role === 'admin' &&
+      html`
 
-  <label for="role">Role</label>
-  <select name="role">
-    <option value="admin" ${selectedUser.role === 'admin' && 'selected'}>Admin</option>
-    <option value="user" ${selectedUser.role === 'user' && 'selected'}>User</option>
-  </select>
-  `
-  }
+    <label for="role">Role</label>
+    <select name="role">
+        <option value="admin" ${selectedUser.role === 'admin' && 'selected'}>Admin</option>
+        <option value="user" ${selectedUser.role === 'user' && 'selected'}>User</option>
+    </select>
+    `
+    }
 
-  <div class="button-group">
-    <button type="reset">Reset</button>
-    <input type="submit" value="Save" />
-  </div>
+    <div class="button-group">
+        <button type="reset">Reset</button>
+        <input type="submit" value="Save" />
+    </div>
 </form>
 `
 
@@ -64,18 +64,16 @@ export const POST = async (context, _request, parameters) => {
     throw error
   }
   const { isValid, errors: validationErrors } = validate(
-    context.body,
+    { ...context.body, id: parameters.id },
     updateUserSchema,
   )
-  console.log(isValid, validationErrors)
   if (!isValid) {
     return context.sendPage(editUserPage, {
       errors: validationErrors,
       selectedUser: user,
     })
   }
-  const { errors, data } = await userModel.update(parameters.id, context.body)
-  console.log(errors, data)
+  const { errors } = await userModel.update(parameters.id, context.body)
   if (errors) {
     const { data: user, errors: userErrors } = userModel.get(parameters.id)
     if (userErrors) {

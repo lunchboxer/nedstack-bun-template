@@ -10,6 +10,7 @@ export const createUserSchema = {
 
 export const updateUserSchema = extendSchema(createUserSchema, {
   id: { required: true },
+  password: { required: false },
 })
 
 export const adminChangePasswordSchema = {

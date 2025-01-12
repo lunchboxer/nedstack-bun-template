@@ -1,18 +1,18 @@
 import { userModel } from '../../../models/userModel.js'
 import { setAlert } from '../../../utils/alert.js'
 import { passwordMatches } from '../../../utils/crypto.js'
+import { html } from '../../../utils/html.js'
 import { redirect } from '../../../utils/redirect.js'
 import {
   adminChangePasswordSchema,
   changePasswordSchema,
 } from '../../../utils/validation-schemas.js'
 import { validate } from '../../../utils/validation.js'
-import { html } from '../html.js'
-import { layout } from '../layout.html.js'
+import { layout } from '../../_layout.html.js'
 
 const title = 'Change Password'
 
-const content = ({ selectedUser = {}, user, errors }) =>
+const content = ({ selectedUser = {}, user, errors = {} }) =>
   html`
 
 <h2>Change Password</h2>
@@ -30,53 +30,53 @@ ${
 
 <form method="post">
 
-  ${
-    user.role !== 'admin' &&
-    html`
+    ${
+      user.role !== 'admin' &&
+      html`
 
-  <label for="current_password">Current Password</label>
-  <input type="password" name="currentPassword" required minlength="6" maxlength="40" />
+    <label for="current_password">Current Password</label>
+    <input type="password" name="currentPassword" required minlength="6" maxlength="40" />
 
-  `
-  }
+    `
+    }
 
-  ${
-    user.role !== 'admin' &&
-    errors.current_password &&
-    html`
+    ${
+      user.role !== 'admin' &&
+      errors.current_password &&
+      html`
 
-  <p class="error">${errors.current_password}</p>
+    <p class="error">${errors.current_password}</p>
 
-  `
-  }
+    `
+    }
 
-  <label for="new_password">New Password</label>
-  <input type="password" name="newPassword" required minlength="6" maxlength="40" />
-  ${
-    errors.newPassword &&
-    html`
+    <label for="new_password">New Password</label>
+    <input type="password" name="newPassword" required minlength="6" maxlength="40" />
+    ${
+      errors.newPassword &&
+      html`
 
-  <p class="error">${errors.newPassword}</p>
+    <p class="error">${errors.newPassword}</p>
 
-  `
-  }
+    `
+    }
 
-  <label for="confirm_password">Confirm New Password</label>
-  <input type="password" name="confirmPassword" required minlength="6" maxlength="40" />
-  ${
-    errors.confirmPassword &&
-    html`
+    <label for="confirm_password">Confirm New Password</label>
+    <input type="password" name="confirmPassword" required minlength="6" maxlength="40" />
+    ${
+      errors.confirmPassword &&
+      html`
 
-  <p class="error">${errors.confirmPassword}</p>
+    <p class="error">${errors.confirmPassword}</p>
 
-  `
-  }
+    `
+    }
 
 
-  <div class="button-group">
-    <a class="button" href="/user/${selectedUser.id}">Cancel</a>
-    <input type="submit" value="Change Password" />
-  </div>
+    <div class="button-group">
+        <a class="button" href="/user/${selectedUser.id}">Cancel</a>
+        <input type="submit" value="Change Password" />
+    </div>
 </form>
 `
 
@@ -92,7 +92,7 @@ export const GET = (context, _request, parameters) => {
   return context.sendPage(changePasswordPage, { selectedUser: user })
 }
 
-export const POST = (context, _request, parameters) => {
+export const POST = async (context, _request, parameters) => {
   let validationSchema = adminChangePasswordSchema
   if (context.user?.role !== 'admin') {
     validationSchema = changePasswordSchema
@@ -128,7 +128,7 @@ export const POST = (context, _request, parameters) => {
       })
     }
   }
-  const { data: modifiedUser, errors } = userModel.update(parameters.id, {
+  const { errors } = await userModel.update(parameters.id, {
     password: newPassword,
   })
   if (errors) {
@@ -147,7 +147,7 @@ export const POST = (context, _request, parameters) => {
   }
   setAlert(
     context,
-    `You've successfully changed "${modifiedUser.username}"'s password.`,
+    `You've successfully changed "${existingUser.username}"'s password.`,
     'success',
   )
   return redirect(context, `/user/${parameters.id}`)

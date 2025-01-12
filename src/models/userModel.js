@@ -107,7 +107,7 @@ export const userModel = {
    * Updates a user's information
    * @param {string} id - The user's unique identifier
    * @param {Object} data - The user data to update
-   * @returns <Promise<{data: Object|null, errors: Object|null}>>
+   * @returns <Promise<{errors: Object|null}>>
    * An object containing either the updated user or an error
    */
   update: async (id, data) => {
@@ -136,8 +136,8 @@ export const userModel = {
       }
 
       const statement = db.query(query)
-      const result = statement.run(sanitizedUpdateData)
-      return { data: result }
+      statement.run(sanitizedUpdateData)
+      return { errors: null }
     } catch (error) {
       return { errors: { all: error.message } }
     }
@@ -153,23 +153,14 @@ export const userModel = {
     const existingUserResponse = userModel.get(id)
     if (!existingUserResponse.data) {
       return {
-        data: null,
-        errors: {
-          all: 'User not found',
-        },
+        errors: { all: 'User not found' },
       }
     }
     try {
       db.query(queries.removeUserById).run(id)
-      return {
-        data: existingUserResponse.data,
-        errors: null,
-      }
+      return { data: existingUserResponse.data }
     } catch (error) {
-      return {
-        data: null,
-        errors: { all: error.message },
-      }
+      return { errors: { all: error.message } }
     }
   },
 
