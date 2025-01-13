@@ -4,4 +4,4 @@ const port = process.env.PORT || 3000
 const hostname = process.env.HOSTNAME || 'localhost'
 createServer(port, hostname)
 
-console.info(`Server is running on http://${hostname}:${port}`)
+console.info(`🚀 Server is running on http://${hostname}:${port}`)
