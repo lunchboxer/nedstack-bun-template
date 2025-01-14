@@ -2,7 +2,7 @@
 SELECT id, username, name, email, role FROM user;
 
 -- name: countUsers
-SELECT COUNT(1) FROM user;
+SELECT COUNT(1) as count FROM user;
 
 -- name: createUser
 INSERT INTO user (id, username, name, email, password, role)

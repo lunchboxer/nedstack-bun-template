@@ -21,7 +21,7 @@ const createUser = async (username, password, email, name, role) => {
 
 const seed = async () => {
   const userCountStatement = db.prepare(queries.countUsers)
-  const userCount = userCountStatement.get()[0]
+  const userCount = userCountStatement.get().count
   console.info('User count:', userCount)
   if (userCount > 0) {
     console.info('Users already seeded')
