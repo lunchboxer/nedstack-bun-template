@@ -82,6 +82,20 @@ function validateField(value, fieldRules, fieldName) {
 export function validate(data, rules) {
   const errors = {}
 
+  if (!data || Object.keys(data).length === 0) {
+    return { isValid: false, errors: { all: 'Invalid data' } }
+  }
+
+  validateFields(data, rules, errors)
+  validateIdFields(data, errors)
+
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+  }
+}
+
+function validateFields(data, rules, errors) {
   for (const [field, fieldRules] of Object.entries(rules)) {
     const value = data[field]
     const fieldError = validateField(value, fieldRules, field)
@@ -90,7 +104,9 @@ export function validate(data, rules) {
       errors[field] = fieldError
     }
   }
+}
 
+function validateIdFields(data, errors) {
   for (const [key, value] of Object.entries(data)) {
     if (
       key === 'id' ||
@@ -103,11 +119,6 @@ export function validate(data, rules) {
         errors[key] = idError
       }
     }
-  }
-
-  return {
-    isValid: Object.keys(errors).length === 0,
-    errors,
   }
 }
 
