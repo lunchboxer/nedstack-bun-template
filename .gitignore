@@ -5,12 +5,12 @@ node_modules
 *.env
 .env.test
 *.min.css
+*.min.js
 
 .npm
 .cache
 logs
 *.log
-database/local.db
 notes.md
 
 # testing
@@ -39,4 +39,4 @@ package-lock.json
 **/*.db-wal
 **/*.db-shm
 bun.lockb
-public/styles.css.br
+**/*.br

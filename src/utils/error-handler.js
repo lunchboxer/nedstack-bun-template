@@ -2,7 +2,6 @@ import { errorPage } from '../pages/_error.html.js'
 
 export function errorHandler(context, request, error, status) {
   const headers = new Headers(context.headers)
-  console.error(`Error ${status}:`, error)
 
   const acceptHeader = request.headers.get('accept')
   if (acceptHeader?.includes('text/html')) {

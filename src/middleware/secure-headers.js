@@ -1,4 +1,3 @@
-// secure-headers.js
 import { randomBytes } from 'node:crypto'
 
 /**
@@ -28,5 +27,9 @@ export function secureHeadersMiddleware(context) {
     'X-XSS-Protection': '0',
   })
 
-  context.headers = headers
+  if (process.env.NODE_ENV === 'production') {
+    context.headers = headers
+  } else {
+    context.headers = new Headers()
+  }
 }

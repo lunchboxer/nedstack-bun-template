@@ -19,10 +19,8 @@ export async function authMiddleware(context, request) {
         context.user = user
       }
       return context
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error('Error verifying JWT:', error)
-      }
+    } catch (_error) {
+      return context
     }
   }
   return context

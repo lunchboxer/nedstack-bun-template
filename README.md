@@ -23,6 +23,7 @@ Requires Bun v1.1.14 or higher.
 - secure headers a-la [helmet](https://helmetjs.github.io/)
 - role-base auth with route middleware to restrict access where needed
 - file-based routing
+- hot-reloading for frontend files
 
 ## Getting started
 
@@ -41,6 +42,7 @@ Create a `.env` file with the following contents:
 
 ```env
 JWT_SECRET=changeme
+NODE_ENV=development
 ```
 
 Create the first admin user with `bun run seed`

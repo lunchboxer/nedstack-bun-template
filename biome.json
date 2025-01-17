@@ -15,10 +15,14 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "ignore": ["**/routes.js"]
+    "ignore": [
+      "**/routes.js"
+    ]
   },
   "javascript": {
-    "globals": ["Bun"],
+    "globals": [
+      "Bun"
+    ],
     "formatter": {
       "quoteStyle": "single",
       "arrowParentheses": "asNeeded",
@@ -37,7 +41,13 @@
         "noConsole": {
           "level": "error",
           "options": {
-            "allow": ["error", "info", "warn", "assert"]
+            "allow": [
+              "clear",
+              "error",
+              "info",
+              "warn",
+              "assert"
+            ]
           }
         }
       }
@@ -45,7 +55,9 @@
   },
   "overrides": [
     {
-      "include": ["**/*.html"]
+      "include": [
+        "**/*.html"
+      ]
     }
   ],
   "css": {
