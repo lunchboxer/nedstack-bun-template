@@ -7,21 +7,37 @@ import { secureHeadersMiddleware } from './middleware/secure-headers.js'
 import { sendPageMiddleware } from './middleware/send-page.js'
 import { sessionStoreMiddleware } from './middleware/session-store.js'
 import { errorHandler404, errorHandler500 } from './utils/error-handler.js'
+import {
+  activateFileWatcher,
+  cleanupHotReload,
+  hotReloadRoute,
+} from './utils/hot-reload.js'
 import { serveStaticFile } from './utils/serve-static.js'
 
 const pagesDir = './pages'
 const routeMap = await createRouteMap(pagesDir)
 
-const dev = process.env.NODE_ENV !== 'production'
+const dev = process.env.NODE_ENV === 'development'
+
+if (dev) {
+  activateFileWatcher()
+}
 
 export const createServer = (port, hostname) => {
-  return Bun.serve({
+  const server = Bun.serve({
+    idleTimeout: 255, // maximum
     port,
     hostname,
     async fetch(request) {
+      const url = new URL(request.url)
+
+      const sseResponse = dev && hotReloadRoute(request)
+      if (sseResponse) {
+        return sseResponse
+      }
+
       const context = {}
 
-      const url = new URL(request.url)
       let route = url.pathname.toLowerCase()
       if (route.endsWith('/') && route !== '/') {
         route = route.slice(0, -1) // Remove the trailing slash
@@ -29,13 +45,6 @@ export const createServer = (port, hostname) => {
 
       secureHeadersMiddleware(context)
 
-      if (dev) {
-        context.headers.set(
-          'cache-control',
-          'no-store, no-cache, must-revalidate',
-        )
-      }
-      // Serve static files first
       const staticResponse = await serveStaticFile(context, request)
       if (staticResponse) {
         return staticResponse
@@ -63,4 +72,10 @@ export const createServer = (port, hostname) => {
       }
     },
   })
+  if (dev) {
+    server.stop = () => {
+      cleanupHotReload()
+    }
+  }
+  return server
 }
