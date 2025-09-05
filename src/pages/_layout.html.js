@@ -33,8 +33,9 @@ export const layout = ({ title, headExtras, content, data }) => html`
 
   ${footer}
   <script src="/public/scripts.js" type="text/javascript"></script>
-  ${process.env.NODE_ENV === 'development' &&
-  html`
+  ${
+    process.env.NODE_ENV === 'development' &&
+    html`
   <script src="/public/hot-reloader.js" type="text/javascript" defer></script>`
   }
 </body>
