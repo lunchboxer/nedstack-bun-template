@@ -8,7 +8,7 @@ createServer(port, hostname)
 
 console.info(`🚀 Server is running on http://${hostname}:${port}`)
 
-const reloadServerPort = Number.parseInt(port) + 1
+const reloadServerPort = Number.parseInt(port, 10) + 1
 
 const watchDirs = ['./src/pages', './public']
 const whitelistExtensions = new Set([

@@ -3,7 +3,7 @@
   "version": "1.0.50",
   "module": "src/app.js",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.2.2",
     "bun-types": "latest"
   },
   "scripts": {
