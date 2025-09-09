@@ -64,7 +64,7 @@ import { html } from '../html.js'
 const someHtml = (data) => html`<p>${data?.text}</p>`
 ```
 
-You could you a plain template literal, but my editor uses this to know if it's dealing with html or javascript. It also trims extra whitespace off the ends. That is all it does. Your secure headers are not quite enough to fend of threats from potential xss attacks. In the above example, if `data.text` is not strictly under your control then it will need to be sanitized first. This could be done automatically, but with NedStack it's done manually
+You could use a plain template literal, but this way my editor knows if it's dealing with html or javascript. It also trims extra whitespace off the ends. That is all it does. Your secure headers are not quite enough to fend of threats from potential xss attacks. In the above example, if `data.text` is not strictly under your control then it will need to be sanitized first. This could be done automatically, but with NedStack it's done manually ...
 
 ```js
 import { sanitize, html } from '../html.js'
