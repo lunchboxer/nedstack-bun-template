@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun --hot server.js",
-    "compress": "find public -type f \\( -name '*.html' -o -name '*.js' -o -name '*.css' \\) -exec brotli -f {} \\;",
+    "compress": "bun run scripts/compress.js",
     "lint": "biome check",
     "format": "biome check --fix",
     "start": "NODE_ENV=production bun run server.js",
