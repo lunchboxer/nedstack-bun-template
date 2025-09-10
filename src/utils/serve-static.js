@@ -67,11 +67,11 @@ async function getFileToServe(filePath, supportsBrotli) {
  * @param {string} fileType - The MIME type of the file.
  */
 function setCachingHeaders(headers, fileType) {
-  if (!dev && fileType.startsWith('font/')) {
-    // Cache fonts for 1 year
+  if (fileType.startsWith('font/')) {
+    // Cache fonts for 1 year in both dev and production
     headers.set('cache-control', 'public, max-age=31536000, immutable')
   } else if (!dev) {
-    // Cache everything else for 24 hours
+    // Cache everything else for 24 hours in production only
     headers.set('cache-control', 'public, max-age=86400')
   }
 }

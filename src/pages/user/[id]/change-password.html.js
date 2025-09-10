@@ -3,11 +3,11 @@ import { setAlert } from '../../../utils/alert.js'
 import { passwordMatches } from '../../../utils/crypto.js'
 import { html } from '../../../utils/html.js'
 import { redirect } from '../../../utils/redirect.js'
+import { validate } from '../../../utils/validation.js'
 import {
   adminChangePasswordSchema,
   changePasswordSchema,
 } from '../../../utils/validation-schemas.js'
-import { validate } from '../../../utils/validation.js'
 import { layout } from '../../_layout.html.js'
 
 const title = 'Change Password'

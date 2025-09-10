@@ -52,6 +52,32 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 The production server uses brotli to serve static files. So you'll need to run `bun run compress` to update the static compressed files.
 
+### Quick start
+
+```bash
+# clone the repo
+bunx degit lunchboxer/nedstack-bun-template my-project
+cd my-project
+
+# set up databases (dev & prod)
+./database/migrate-dev.sh
+./database/migrate-prod.sh
+
+# add required env vars
+cat <<EOF > .env
+JWT_SECRET=changeme
+NODE_ENV=development
+EOF
+
+# seed an admin user
+bun run seed
+
+# start the dev server
+bun run dev
+```
+
+After the last command finishes, open http://localhost:3000 in your browser and log in with the seeded admin credentials.
+
 ## html templates
 
 You'll notice the views directory has files with `.html.js` extension. This is nothing special. It helps me to know that this is a module for outputting html. It's also used by my text editor (neovim BTW) to trigger the right tooling for fun and easy editing.
